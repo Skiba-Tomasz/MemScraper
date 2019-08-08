@@ -1,4 +1,4 @@
-package memscraper;
+package com.skiba.fun.memscraper.JBZDmemscraper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +11,6 @@ import org.jsoup.select.Elements;
 
 public class MemScraper {
 	private final String domainURL = "https://jbzdy.net/str/";
-	
-	
 
 	public List<MemObject> loadMemsFromPage(int pageNumber) {
 		Elements memPosts = null;

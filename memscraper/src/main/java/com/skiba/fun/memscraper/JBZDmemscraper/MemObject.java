@@ -1,4 +1,4 @@
-package memscraper;
+package com.skiba.fun.memscraper.JBZDmemscraper;
 
 import java.util.Arrays;
 
