@@ -1,0 +1,10 @@
+# Eclipse
+.classpath
+.project
+.settings/
+.recommenders/
+
+# Maven
+log/
+target/
+/.metadata/
