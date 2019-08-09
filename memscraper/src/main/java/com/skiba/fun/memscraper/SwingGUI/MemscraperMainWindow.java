@@ -3,6 +3,8 @@ package com.skiba.fun.memscraper.SwingGUI;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class MemscraperMainWindow {
 	private JPanel contentPanel;
 	
 	private int currentPage = 1;
-	private int scrollMargin = 900;
+	private int scrollMargin = 1000;
 	private List<MemPanel> memPanels;
 
 	public static void main(String[] args) {
@@ -79,7 +81,27 @@ public class MemscraperMainWindow {
 	}
 	
 	private void addScrollListener() {
-		scr
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				JViewport vp = scrollPane.getViewport();
+				System.out.println(vp.getViewPosition().y + " x " +  (contentPanel.getHeight()- scrollMargin));
+				if(e.getAdjustmentType() == AdjustmentEvent.TRACK) {
+					if(vp.getViewPosition().y >=  contentPanel.getHeight() - scrollMargin) {
+						currentPage ++;
+						int backingPosition = contentPanel.getHeight() - scrollMargin;
+						addMemsToViewpoint(currentPage);
+						scrollPane.getVerticalScrollBar().setValue(backingPosition);
+						contentPanel.revalidate();
+						contentPanel.repaint();
+						scrollPane.revalidate();
+						scrollPane.repaint();
+						frame.revalidate();
+						frame.repaint();
+					}
+				}
+			}
+		});
 		/*scrollPane.getViewport().addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				//System.out.println(scrollPane.getVerticalScrollBar().getValue());
