@@ -27,8 +27,7 @@ public class MemscraperMainWindow {
 	private JFrame frame;
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
-	
-	private List<MemPanel> memPanels;
+
 	private List<MemObject> mems;
 	
 	private int currentPage = 1;
@@ -36,7 +35,6 @@ public class MemscraperMainWindow {
 	private int scrollBarTrigger = 1500;
 	
 	private int memsToLoadByStep = 2;
-	private int memsOnOnePage = 8;
 	
 	public enum LoadState{
 		LOADING, WAITING
