@@ -27,14 +27,12 @@ public class MemscraperMainWindow {
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
 	
-	private int currentPage = 1;
-	private int scrollMargin = 1000;
 	private List<MemPanel> memPanels;
 	private List<MemObject> mems;
 	
+	private int currentPage = 1;
 	private int lastMemeIndex = 0;
-	private int memLoadedCount = 0;
-
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -67,68 +65,37 @@ public class MemscraperMainWindow {
 		scrollPane.setViewportView(contentPanel);
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		
-		addMemsToViewpoint(currentPage);
+		
+		loadStartingPage();
 		frame.setVisible(true);
-		
-		addScrollListener();
 	}
 	
-	private void loadNextMeme() {
-		
+	private void loadStartingPage() {
+		loadMemInfo();
+		for(int i = 0; i < mems.size(); i++) {
+			addMemPanel(i);
+		}
 	}
 
-	private void addMemsToViewpoint(int page) {
+	private void loadMemInfo() {
 		MemScraper scraper = new MemScraper();
-		mems.addAll(scraper.loadMemsFromPage(page));
-		memLoadedCount = mems.size()-1;
-		memPanels = new ArrayList<>();
-		
-		for(; lastMemeIndex < memLoadedCount; lastMemeIndex++) {
-			MemObject mem = mems.get(lastMemeIndex);
-			memPanels.add(new MemPanel(mem));
-		}
-		for(MemPanel memPanel : memPanels) {
-			int backingPos = scrollPane.getVerticalScrollBar().getValue();
-			contentPanel.add(memPanel);
-			contentPanel.revalidate();
-			contentPanel.repaint();
-			scrollPane.revalidate();
-			scrollPane.repaint();
-			frame.revalidate();
-			frame.repaint();
-			scrollPane.getVerticalScrollBar().setValue(backingPos);
-		}
+		mems.addAll(scraper.loadMemsFromPage(currentPage));
 	}
 	
-	private void addScrollListener() {
-		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {			
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				
-				System.out.println(scrollPane.getVerticalScrollBar().getValue() + " x " +  scrollPane.getVerticalScrollBar().getMaximum());
-				if(e.getAdjustmentType() == AdjustmentEvent.TRACK) {
-					if(scrollPane.getVerticalScrollBar().getValue() >= scrollPane.getVerticalScrollBar().getMaximum() - scrollMargin) {
-						loadMemsAndRefresh();
-					}
-				}
-			}
-		});
+	private void addMemPanel(int memIndex) {
+		MemPanel memPanel = new MemPanel(mems.get(memIndex));
+		contentPanel.add(memPanel);
+		lastMemeIndex++;
+		refreshWindow();
 	}
 
-	private void loadMemsAndRefresh() {
-		Thread worker = new Thread() {
-			public void run() {
-				currentPage ++;
-				addMemsToViewpoint(currentPage);
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-		worker.start();
-	}
+	private void refreshWindow() {
+		contentPanel.revalidate();
+		contentPanel.repaint();
+		scrollPane.revalidate();
+		scrollPane.repaint();
+		frame.revalidate();
+		frame.repaint();
+	}	
 
 }
