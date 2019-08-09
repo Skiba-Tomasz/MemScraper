@@ -20,7 +20,7 @@ public class MemObject {
 	
 
 	public ImageIcon getImage() {
-		if(image == null) pullImage();
+		if(image == null && !imageUrl.equals("Null URL")) pullImage();
 		return image;
 	}
 
@@ -82,6 +82,7 @@ public class MemObject {
 	
 	private void pullImage() {
 		URL url = null;
+		System.out.println(imageUrl);
 		try {
 			url = new URL(imageUrl);
 		} catch (MalformedURLException e) {

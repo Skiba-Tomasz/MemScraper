@@ -57,7 +57,9 @@ public class MemScraper {
 	}
 	
 	private String getMemPostImageUrl(Element post) {
-		return post.select("div.content-info").select("div.media").select("div.image.rolled").select("img").attr("src");
+		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("img").attr("src");
+		if(!memUrl.isEmpty())return memUrl;
+		else return new String("Null URL");
 	}
 
 	private int getMemPostRating(Element post) {

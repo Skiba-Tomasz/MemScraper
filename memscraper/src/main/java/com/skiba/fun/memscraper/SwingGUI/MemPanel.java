@@ -28,7 +28,8 @@ public class MemPanel extends JPanel {
 		add(tagLabel);
 		
 		imageDisplayLabel = new JLabel("");
-		imageDisplayLabel.setIcon(mem.getImage());
+		if(mem.getImage() != null)imageDisplayLabel.setIcon(mem.getImage());
+		else imageDisplayLabel.setText("WIDEO");
 		add(imageDisplayLabel);
 	}
 
