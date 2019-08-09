@@ -30,6 +30,10 @@ public class MemscraperMainWindow {
 	private int currentPage = 1;
 	private int scrollMargin = 1000;
 	private List<MemPanel> memPanels;
+	private List<MemObject> mems;
+	
+	private int lastMemeIndex = 0;
+	private int memLoadedCount = 0;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -48,6 +52,8 @@ public class MemscraperMainWindow {
 	}
 
 	private void initialize() {
+		mems = new ArrayList<>();
+		
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(650,800));
@@ -66,17 +72,31 @@ public class MemscraperMainWindow {
 		
 		addScrollListener();
 	}
+	
+	private void loadNextMeme() {
+		
+	}
 
 	private void addMemsToViewpoint(int page) {
 		MemScraper scraper = new MemScraper();
-		List<MemObject> mems = scraper.loadMemsFromPage(page);
+		mems.addAll(scraper.loadMemsFromPage(page));
+		memLoadedCount = mems.size()-1;
 		memPanels = new ArrayList<>();
 		
-		for(MemObject mem : mems) {
+		for(; lastMemeIndex < memLoadedCount; lastMemeIndex++) {
+			MemObject mem = mems.get(lastMemeIndex);
 			memPanels.add(new MemPanel(mem));
 		}
 		for(MemPanel memPanel : memPanels) {
+			int backingPos = scrollPane.getVerticalScrollBar().getValue();
 			contentPanel.add(memPanel);
+			contentPanel.revalidate();
+			contentPanel.repaint();
+			scrollPane.revalidate();
+			scrollPane.repaint();
+			frame.revalidate();
+			frame.repaint();
+			scrollPane.getVerticalScrollBar().setValue(backingPos);
 		}
 	}
 	
@@ -84,46 +104,31 @@ public class MemscraperMainWindow {
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {			
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				JViewport vp = scrollPane.getViewport();
-				System.out.println(vp.getViewPosition().y + " x " +  (contentPanel.getHeight()- scrollMargin));
+				
+				System.out.println(scrollPane.getVerticalScrollBar().getValue() + " x " +  scrollPane.getVerticalScrollBar().getMaximum());
 				if(e.getAdjustmentType() == AdjustmentEvent.TRACK) {
-					if(vp.getViewPosition().y >=  contentPanel.getHeight() - scrollMargin) {
-						currentPage ++;
-						int backingPosition = contentPanel.getHeight() - scrollMargin;
-						addMemsToViewpoint(currentPage);
-						scrollPane.getVerticalScrollBar().setValue(backingPosition);
-						contentPanel.revalidate();
-						contentPanel.repaint();
-						scrollPane.revalidate();
-						scrollPane.repaint();
-						frame.revalidate();
-						frame.repaint();
+					if(scrollPane.getVerticalScrollBar().getValue() >= scrollPane.getVerticalScrollBar().getMaximum() - scrollMargin) {
+						loadMemsAndRefresh();
 					}
 				}
 			}
 		});
-		/*scrollPane.getViewport().addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				//System.out.println(scrollPane.getVerticalScrollBar().getValue());
-				JViewport vp = scrollPane.getViewport();
-				System.out.println(vp.getView().getHeight() * 0.8+ " x " + vp.getViewPosition().y );
-				System.out.println(memPanels.get(memPanels.size()-1).getY());
-				if(vp.getView().getHeight() - scrollMargin < vp.getViewPosition().y) {
-					System.out.println("Loading Next");
-					
-					currentPage ++;
-					int savedYPosition = memPanels.get(memPanels.size()-1).getY();
-					addMemsToViewpoint(currentPage);
-					contentPanel.revalidate();
-					contentPanel.repaint();
-					scrollPane.revalidate();
-					scrollPane.repaint();
-					vp = scrollPane.getViewport();
-					vp.setViewPosition(new Point(vp.getViewPosition().x, savedYPosition));
+	}
+
+	private void loadMemsAndRefresh() {
+		Thread worker = new Thread() {
+			public void run() {
+				currentPage ++;
+				addMemsToViewpoint(currentPage);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-		});*/
-
+		};
+		worker.start();
 	}
 
 }
