@@ -19,7 +19,7 @@ public class MemPanel extends JPanel {
 		setMinimumSize(new Dimension(650, 650));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		titleLabel = new JLabel(mem.getTitle());
+		titleLabel = new JLabel(mem.getTitle() + " [" + mem.getRating() + "]");
 		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		add(titleLabel);
 		
