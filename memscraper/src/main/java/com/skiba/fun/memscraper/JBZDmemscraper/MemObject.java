@@ -1,6 +1,13 @@
 package com.skiba.fun.memscraper.JBZDmemscraper;
 
+import java.awt.Image;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import org.jsoup.nodes.Element;
 
@@ -8,8 +15,14 @@ public class MemObject {
 	private String title;
 	private String[] tags;
 	private int rating;
-	private String url;
+	private String imageUrl;
+	private ImageIcon image;
+	
 
+	public ImageIcon getImage() {
+		if(image == null) pullImage();
+		return image;
+	}
 
 	public String getTitle() {
 		return title;
@@ -23,13 +36,13 @@ public class MemObject {
 		return rating;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getImageUrl() {
+		return imageUrl;
 	}
 
 	@Override
 	public String toString() {
-		return "MemObject [title=" + title + ", tags=" + Arrays.toString(tags) + ", rating=" + rating + ", url=" + url
+		return "MemObject [title=" + title + ", tags=" + Arrays.toString(tags) + ", rating=" + rating + ", url=" + imageUrl
 				+ "]";
 	}
 	
@@ -59,10 +72,29 @@ public class MemObject {
 			return this;
 		}	
 	}
+	
 	private MemObject(Builder b) {
 		this.title = b.title;
 		this.rating = b.rating;
 		this.tags = b.tags;
-		this.url = b.url;
+		this.imageUrl = b.url;
+	}
+	
+	private void pullImage() {
+		URL url = null;
+		try {
+			url = new URL(imageUrl);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Image image = null;
+		try {
+			image = ImageIO.read(url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.image = new ImageIcon(image);
 	}
 }
