@@ -32,6 +32,12 @@ public class MemscraperMainWindow {
 	
 	private int currentPage = 1;
 	private int lastMemeIndex = 0;
+	private int scrollBarTrigger = 1500;
+	
+	public enum LoadState{
+		LOADING, WAITING
+	}
+	public LoadState loadingState = LoadState.LOADING;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -68,6 +74,8 @@ public class MemscraperMainWindow {
 		
 		loadStartingPage();
 		frame.setVisible(true);
+		
+		addScrollListener();
 	}
 	
 	private void loadStartingPage() {
@@ -96,6 +104,24 @@ public class MemscraperMainWindow {
 		scrollPane.repaint();
 		frame.revalidate();
 		frame.repaint();
+		loadingState = LoadState.WAITING;
+	}
+	
+	private void addScrollListener() {
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				// TODO Auto-generated method stub
+				if(loadingState == LoadState.WAITING) {
+					if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger) {
+						System.out.println("LOAD");
+						loadingState = LoadState.LOADING;
+						
+					}
+				}
+			}
+		});
 	}	
 
 }
