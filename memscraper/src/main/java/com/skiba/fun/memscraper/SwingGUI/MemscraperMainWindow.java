@@ -7,6 +7,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -31,8 +32,11 @@ public class MemscraperMainWindow {
 	private List<MemObject> mems;
 	
 	private int currentPage = 1;
-	private int lastMemeIndex = 0;
+	private AtomicInteger lastMemeIndex = new AtomicInteger(0);
 	private int scrollBarTrigger = 1500;
+	
+	private int memsToLoadByStep = 2;
+	private int memsOnOnePage = 8;
 	
 	public enum LoadState{
 		LOADING, WAITING
@@ -81,19 +85,19 @@ public class MemscraperMainWindow {
 	private void loadStartingPage() {
 		loadMemInfo();
 		for(int i = 0; i < mems.size(); i++) {
-			addMemPanel(i);
+			addMemPanel();
 		}
 	}
 
-	private void loadMemInfo() {
+	private synchronized void loadMemInfo() {
 		MemScraper scraper = new MemScraper();
 		mems.addAll(scraper.loadMemsFromPage(currentPage));
 	}
 	
-	private void addMemPanel(int memIndex) {
-		MemPanel memPanel = new MemPanel(mems.get(memIndex));
+	private synchronized void addMemPanel() {
+		MemPanel memPanel = new MemPanel(mems.get(lastMemeIndex.intValue()));
 		contentPanel.add(memPanel);
-		lastMemeIndex++;
+		lastMemeIndex.addAndGet(1);
 		refreshWindow();
 	}
 
@@ -115,13 +119,28 @@ public class MemscraperMainWindow {
 				// TODO Auto-generated method stub
 				if(loadingState == LoadState.WAITING) {
 					if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger) {
-						System.out.println("LOAD");
-						loadingState = LoadState.LOADING;
-						
+						loadWorker();	
 					}
 				}
 			}
 		});
+	}
+	
+	private synchronized void loadWorker() {
+		loadingState = LoadState.LOADING;
+		Thread worker = new Thread() {
+			public void run() {
+				if(lastMemeIndex.intValue() >= mems.size() - memsToLoadByStep) {
+					currentPage++;
+					loadMemInfo();
+				}
+				for(int i = 0; i < memsToLoadByStep; i++) {
+					addMemPanel();
+				}	
+				loadingState = LoadState.WAITING;
+			}
+		};
+		worker.start();
 	}	
 
 }
