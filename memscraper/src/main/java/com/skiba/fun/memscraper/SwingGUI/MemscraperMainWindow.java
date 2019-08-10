@@ -19,8 +19,11 @@ import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemScraper;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 
 public class MemscraperMainWindow {
 
@@ -62,7 +65,8 @@ public class MemscraperMainWindow {
 		
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setMinimumSize(new Dimension(650,800));
+		frame.getContentPane().setLayout(new BorderLayout(5, 0));
+		
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(32);
@@ -75,6 +79,11 @@ public class MemscraperMainWindow {
 		
 		
 		loadStartingPage();
+		
+		frame.setMinimumSize(new Dimension(700, 800));
+		frame.setPreferredSize(new Dimension(700, 800));
+		contentPanel.setBackground(Color.DARK_GRAY);
+		frame.pack();
 		frame.setVisible(true);
 		
 		addScrollListener();
@@ -90,6 +99,7 @@ public class MemscraperMainWindow {
 	private synchronized void loadMemInfo() {
 		MemScraper scraper = new MemScraper();
 		mems.addAll(scraper.loadMemsFromPage(currentPage));
+		frame.setTitle("JBZD scraper [Strona: "+ currentPage +"]");
 	}
 	
 	private synchronized void addMemPanel() {
