@@ -1,5 +1,6 @@
 package com.skiba.fun.memscraper.JBZDmemscraper;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +10,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.skiba.fun.memscraper.JBZDmemscraper.MemObject.MemType;
+
 public class MemScraper {
 	private final String domainURL = "https://jbzdy.net/str/";
+	MemType type;
+	
 
 	public List<MemObject> loadMemsFromPage(int pageNumber) {
 		Elements memPosts = null;
@@ -31,7 +36,11 @@ public class MemScraper {
 			MemObject mem = new MemObject.Builder().setTitle(getMemPostTitle(post))
 													.setTags(getMemPostTags(post))
 													.setRating(getMemPostRating(post))
-													.setUrl(getMemPostImageUrl(post)).build();
+													.setUrl(getMemPostImageUrl(post))
+													.setType(type).build();
+			if(mem.getType() == MemType.VIDEO) {
+				mem.setVideoSize(getMemPostVideoSize(post));
+			}
 			memsFromPosts.add(mem);
 		}
 		return memsFromPosts;
@@ -57,13 +66,32 @@ public class MemScraper {
 	}
 	
 	private String getMemPostImageUrl(Element post) {
-		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("img").attr("src");
+		type = MemType.IMAGE;
+		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("img").attr("src");	
 		if(!memUrl.isEmpty())return memUrl;
-		else return new String("Null URL");
+		else return getMemPostVideoUrl(post);
 	}
 
 	private int getMemPostRating(Element post) {
 		return Integer.parseInt(post.select("div.content-info").select("div.content-actions").select("div").select("span").text());
+	}
+	
+	private String getMemPostVideoUrl(Element post) {
+		type = MemType.VIDEO;
+		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("source").attr("src");
+		System.out.println(memUrl);
+		if(memUrl.isEmpty()) type = MemType.UNDEFINED;
+		return memUrl;
+	}
+	
+	private Dimension getMemPostVideoSize(Element post) {
+		type = MemType.VIDEO;
+		String atrributes = post.select("div.content-info").select("div.media").select("div.image.rolled").select("video").attr("data-setup");
+		String sizeString = atrributes.substring(atrributes.indexOf(':')+2, atrributes.indexOf(',') -1);
+		String[] dimensions = sizeString.split(":");
+		if(atrributes.isEmpty()) type = MemType.UNDEFINED;
+		System.out.println(dimensions[0] + " " + dimensions[1]);
+		return new Dimension(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]));
 	}
 }
 		
