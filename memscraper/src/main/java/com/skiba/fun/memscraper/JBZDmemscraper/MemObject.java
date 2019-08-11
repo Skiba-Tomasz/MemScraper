@@ -132,7 +132,12 @@ public class MemObject {
 	
 	private void pullImage() {
 		URL url = null;
-		System.out.println(contentURL);
+		//
+		//
+		
+		//System.out.println(contentURL);
+		//
+		//
 		try {
 			url = new URL(contentURL);
 		} catch (MalformedURLException e) {

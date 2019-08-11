@@ -90,7 +90,7 @@ public class MemScraper {
 		String sizeString = atrributes.substring(atrributes.indexOf(':')+2, atrributes.indexOf(',') -1);
 		String[] dimensions = sizeString.split(":");
 		if(atrributes.isEmpty()) type = MemType.UNDEFINED;
-		System.out.println(dimensions[0] + " " + dimensions[1]);
+		//System.out.println(dimensions[0] + " " + dimensions[1]);
 		return new Dimension(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]));
 	}
 }
