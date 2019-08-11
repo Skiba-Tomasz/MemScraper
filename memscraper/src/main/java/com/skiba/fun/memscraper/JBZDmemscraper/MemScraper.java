@@ -14,9 +14,8 @@ import com.skiba.fun.memscraper.JBZDmemscraper.MemObject.MemType;
 
 public class MemScraper {
 	private final String domainURL = "https://jbzdy.net/str/";
-	MemType type;
+	private String memContentURL;
 	
-
 	public List<MemObject> loadMemsFromPage(int pageNumber) {
 		Elements memPosts = null;
 		try {
@@ -29,6 +28,14 @@ public class MemScraper {
 		}
 		return scrapeMemsFromPage(memPosts);
 	}
+	
+	private Elements getMemPosts(Elements currentPostContainer) {
+		Elements memPosts = new Elements();
+		for(Element element : currentPostContainer) {
+			if(element.select("article.resource-object ") != null)memPosts.addAll(element.select("article.resource-object "));
+		}
+		return memPosts;
+	}
 
 	private List<MemObject> scrapeMemsFromPage(Elements memPosts) {
 		List<MemObject> memsFromPosts = new ArrayList<>();
@@ -37,22 +44,10 @@ public class MemScraper {
 			mem.setTitle(getMemPostTitle(post));
 			mem.setTags(getMemPostTags(post));
 			mem.setRating(getMemPostRating(post));
-			mem.setContentURL(getMemPostImageUrl(post));
-			mem.setType(type);
-			if(mem.getType() == MemType.VIDEO) {
-				mem.setVideoSize(getMemPostVideoSize(post));
-			}
+			getAndSetMemContent(mem, post);
 			memsFromPosts.add(mem);
 		}
 		return memsFromPosts;
-	}
-
-	private Elements getMemPosts(Elements currentPostContainer) {
-		Elements memPosts = new Elements();
-		for(Element element : currentPostContainer) {
-			if(element.select("article.resource-object ") != null)memPosts.addAll(element.select("article.resource-object "));
-		}
-		return memPosts;
 	}
 	
 	private String getMemPostTitle(Element post) {
@@ -66,32 +61,40 @@ public class MemScraper {
 		return tags;
 	}
 	
-	private String getMemPostImageUrl(Element post) {
-		type = MemType.IMAGE;
-		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("img").attr("src");	
-		if(!memUrl.isEmpty())return memUrl;
-		else return getMemPostVideoUrl(post);
-	}
-
 	private int getMemPostRating(Element post) {
 		return Integer.parseInt(post.select("div.content-info").select("div.content-actions").select("div").select("span").text());
 	}
 	
+	private void getAndSetMemContent(MemObject mem, Element post) {
+		if(!getMemPostImageUrl(post).isEmpty()) {
+			mem.setType(MemType.IMAGE);
+			mem.setContentURL(memContentURL);
+		}else if(!getMemPostVideoUrl(post).isEmpty()) {
+			mem.setType(MemType.VIDEO);
+			mem.setContentURL(memContentURL);
+			Dimension videoDimension = getMemPostVideoSize(post);
+			if(videoDimension == null) mem.setType(MemType.UNDEFINED);
+			else mem.setVideoSize(videoDimension);
+		}
+	}
+	
+	private String getMemPostImageUrl(Element post) {
+		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("img").attr("src");	
+		memContentURL = memUrl;
+		return memUrl;
+	}
+
 	private String getMemPostVideoUrl(Element post) {
-		type = MemType.VIDEO;
 		String memUrl = post.select("div.content-info").select("div.media").select("div.image.rolled").select("source").attr("src");
-		System.out.println(memUrl);
-		if(memUrl.isEmpty()) type = MemType.UNDEFINED;
+		memContentURL = memUrl;
 		return memUrl;
 	}
 	
 	private Dimension getMemPostVideoSize(Element post) {
-		type = MemType.VIDEO;
 		String atrributes = post.select("div.content-info").select("div.media").select("div.image.rolled").select("video").attr("data-setup");
 		String sizeString = atrributes.substring(atrributes.indexOf(':')+2, atrributes.indexOf(',') -1);
 		String[] dimensions = sizeString.split(":");
-		if(atrributes.isEmpty()) type = MemType.UNDEFINED;
-		//System.out.println(dimensions[0] + " " + dimensions[1]);
+		if(atrributes.isEmpty() || sizeString.isEmpty() || dimensions == null) return null;
 		return new Dimension(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]));
 	}
 }
