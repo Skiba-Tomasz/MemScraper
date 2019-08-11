@@ -15,16 +15,16 @@ public class MemObject {
 	public enum MemType{
 		IMAGE, VIDEO, UNDEFINED
 	}
+	private MemType type = MemType.UNDEFINED;
 	
 	private String contentURL;
 	private ImageIcon image;
-	//private Component video;
 	private Dimension videoSize;
 	private String title = "Brak tytu³u";
 	private String[] tags = new String[] {"Brak tagu"};
 	private int rating;
 	private String url = "Brak linku";
-	private MemType type = MemType.UNDEFINED;
+	
 
 	
 	public String getContentURL() {
