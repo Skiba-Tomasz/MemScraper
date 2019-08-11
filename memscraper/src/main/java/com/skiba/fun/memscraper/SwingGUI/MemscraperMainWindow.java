@@ -2,18 +2,15 @@ package com.skiba.fun.memscraper.SwingGUI;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemScraper;
@@ -24,7 +21,6 @@ import java.awt.Component;
 
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 
 public class MemscraperMainWindow extends JFrame{
 
@@ -37,6 +33,7 @@ public class MemscraperMainWindow extends JFrame{
 	private AtomicInteger lastMemeIndex = new AtomicInteger(0);
 	
 	private int scrollBarTrigger = 1800;
+	private int scrollIncreasement = 32;
 	private int memsToLoadByStep = 2;
 	
 	public enum LoadState{
@@ -90,13 +87,14 @@ public class MemscraperMainWindow extends JFrame{
 	private void initializeScrollPanel() {
 		scrollPane = new JScrollPane();
 		scrollPane.setViewportView(contentPanel);	
-		scrollPane.getVerticalScrollBar().setUnitIncrement(32);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(scrollIncreasement);
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		addScrollListener();
 	}
 
 	private void addScrollListener() {
 		scrollPane.getVerticalScrollBar().addAdjustmentListener((AdjustmentEvent e) -> loadNewIfReachedBottom());
+		scrollPane.getVerticalScrollBar().addMouseWheelListener((MouseWheelEvent e) -> scrollBehaviour(e));
 	}
 	
 	private void loadNewIfReachedBottom() {
@@ -105,6 +103,16 @@ public class MemscraperMainWindow extends JFrame{
 				loadNewMems();	
 			}
 		}
+	}
+	
+	private void scrollBehaviour(MouseWheelEvent e) {
+		int currentValue = scrollPane.getVerticalScrollBar().getValue();
+		if(e.getWheelRotation() > 0) {
+			scrollPane.getVerticalScrollBar().setValue(currentValue + scrollIncreasement);
+		}else {
+			scrollPane.getVerticalScrollBar().setValue(currentValue - scrollIncreasement);
+		}
+		
 	}
 	
 	private void loadStartingPage() {
