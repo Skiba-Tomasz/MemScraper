@@ -26,9 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
-public class MemscraperMainWindow {
+public class MemscraperMainWindow extends JFrame{
 
-	private JFrame frame;
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
 
@@ -36,8 +35,8 @@ public class MemscraperMainWindow {
 	
 	private int currentPage = 1;
 	private AtomicInteger lastMemeIndex = new AtomicInteger(0);
-	private int scrollBarTrigger = 1800;
 	
+	private int scrollBarTrigger = 1800;
 	private int memsToLoadByStep = 2;
 	
 	public enum LoadState{
@@ -50,6 +49,8 @@ public class MemscraperMainWindow {
 			public void run() {
 				try {
 					MemscraperMainWindow window = new MemscraperMainWindow();
+					window.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -58,36 +59,52 @@ public class MemscraperMainWindow {
 	}
 
 	public MemscraperMainWindow() {
-		initialize();
-	}
-
-	private void initialize() {
 		mems = new ArrayList<>();
 		
-		frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new BorderLayout(5, 0));
-		
-		
-		scrollPane = new JScrollPane();
-		scrollPane.getVerticalScrollBar().setUnitIncrement(32);
-		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-		
-		
+		initializeFrame(); 	
+		initializeFrameComponents();			
+		loadStartingPage();
+			
+		pack();	
+	}
+	
+	private void initializeFrame() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(new BorderLayout(5, 0));
+		setMinimumSize(new Dimension(700, 800));
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+	}
+	
+	private void initializeFrameComponents() {	
+		initializeContentPanel();
+		initializeScrollPanel();
+	}
+
+	private void initializeContentPanel() {
 		contentPanel = new JPanel();
 		contentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		scrollPane.setViewportView(contentPanel);
-		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-		
-		
-		loadStartingPage();
-		
-		frame.setMinimumSize(new Dimension(700, 800));
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		contentPanel.setBackground(Color.DARK_GRAY);
-		frame.pack();
-		frame.setVisible(true);
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+	}
+	
+	private void initializeScrollPanel() {
+		scrollPane = new JScrollPane();
+		scrollPane.setViewportView(contentPanel);	
+		scrollPane.getVerticalScrollBar().setUnitIncrement(32);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		addScrollListener();
+	}
+
+	private void addScrollListener() {
+		scrollPane.getVerticalScrollBar().addAdjustmentListener((AdjustmentEvent e) -> loadNewIfReachedBottom());
+	}
+	
+	private void loadNewIfReachedBottom() {
+		if(loadingState == LoadState.WAITING) {
+			if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger) {
+				loadNewMems();	
+			}
+		}
 	}
 	
 	private void loadStartingPage() {
@@ -100,7 +117,7 @@ public class MemscraperMainWindow {
 	private synchronized void loadMemInfo() {
 		MemScraper scraper = new MemScraper();
 		mems.addAll(scraper.loadMemsFromPage(currentPage));
-		frame.setTitle("JBZD scraper [Strona: "+ currentPage +"]");
+		setTitle("JBZD scraper [Strona: "+ currentPage +"]");
 	}
 	
 	private synchronized void addMemPanel() {
@@ -115,27 +132,12 @@ public class MemscraperMainWindow {
 		contentPanel.repaint();
 		scrollPane.revalidate();
 		scrollPane.repaint();
-		frame.revalidate();
-		frame.repaint();
+		revalidate();
+		repaint();
 		loadingState = LoadState.WAITING;
 	}
 	
-	private void addScrollListener() {
-		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				// TODO Auto-generated method stub
-				if(loadingState == LoadState.WAITING) {
-					if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger) {
-						loadWorker();	
-					}
-				}
-			}
-		});
-	}
-	
-	private synchronized void loadWorker() {
+	private synchronized void loadNewMems() {
 		loadingState = LoadState.LOADING;
 		Thread worker = new Thread() {
 			public void run() {
