@@ -20,6 +20,7 @@ import com.skiba.fun.memscraper.JBZDmemscraper.MemScraper;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
@@ -35,7 +36,7 @@ public class MemscraperMainWindow {
 	
 	private int currentPage = 1;
 	private AtomicInteger lastMemeIndex = new AtomicInteger(0);
-	private int scrollBarTrigger = 1500;
+	private int scrollBarTrigger = 1800;
 	
 	private int memsToLoadByStep = 2;
 	
@@ -74,6 +75,7 @@ public class MemscraperMainWindow {
 		
 		
 		contentPanel = new JPanel();
+		contentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		scrollPane.setViewportView(contentPanel);
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		
@@ -81,11 +83,10 @@ public class MemscraperMainWindow {
 		loadStartingPage();
 		
 		frame.setMinimumSize(new Dimension(700, 800));
-		frame.setPreferredSize(new Dimension(700, 800));
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		contentPanel.setBackground(Color.DARK_GRAY);
 		frame.pack();
 		frame.setVisible(true);
-		
 		addScrollListener();
 	}
 	
