@@ -33,11 +33,12 @@ public class MemScraper {
 	private List<MemObject> scrapeMemsFromPage(Elements memPosts) {
 		List<MemObject> memsFromPosts = new ArrayList<>();
 		for(Element post : memPosts) {
-			MemObject mem = new MemObject.Builder().setTitle(getMemPostTitle(post))
-													.setTags(getMemPostTags(post))
-													.setRating(getMemPostRating(post))
-													.setUrl(getMemPostImageUrl(post))
-													.setType(type).build();
+			MemObject mem = new MemObject();
+			mem.setTitle(getMemPostTitle(post));
+			mem.setTags(getMemPostTags(post));
+			mem.setRating(getMemPostRating(post));
+			mem.setContentURL(getMemPostImageUrl(post));
+			mem.setType(type);
 			if(mem.getType() == MemType.VIDEO) {
 				mem.setVideoSize(getMemPostVideoSize(post));
 			}
