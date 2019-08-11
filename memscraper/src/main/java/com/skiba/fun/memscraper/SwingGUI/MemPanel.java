@@ -2,70 +2,80 @@ package com.skiba.fun.memscraper.SwingGUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import java.net.URL;
 import java.util.Arrays;
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
-
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
-import javafx.util.Duration;
-
 
 public class MemPanel extends JPanel {
 
 	private JLabel titleLabel;
 	private JLabel tagLabel;
-	private JLabel imageDisplayLabel;
 	private JLabel bottomSeparatorLabel, topSeparatorLabel;
+	private JPanel infoPanel;
 
-	public MemPanel(MemObject mem) {
+	public MemPanel(MemObject mem) {	
+		initializeLayout();	
+		initializeMemInformationHeader(mem);	
+		addMemToView(mem);
 		
+		setSize(700, getMinimumSize().height);
+		validate();
+	}
+	
+	private void initializeLayout() {
 		setLayout(new BorderLayout());
 		setBackground(Color.DARK_GRAY);
-		
-		JPanel infoPanel = new JPanel();
+	}
+
+	private void initializeMemInformationHeader(MemObject mem) {
+		infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 		infoPanel.setBackground(Color.darkGray);
-		
+		addInformationComponents(mem);	
+		add(infoPanel, BorderLayout.NORTH);
+	}
+
+	private void addInformationComponents(MemObject mem) {
+		addTopSpacingSeparator();	
+		addTitle(mem);
+		addTags(mem);
+		addBottomSeparator();
+	}
+
+	private void addTopSpacingSeparator() {
 		topSeparatorLabel = new JLabel(" ");
 		topSeparatorLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		infoPanel.add(topSeparatorLabel);
-		
+	}
+
+	private void addTitle(MemObject mem) {
 		titleLabel = new JLabel(" " + mem.getTitle() + " [" + mem.getRating() + "]");
 		titleLabel.setForeground(Color.red);
 		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		infoPanel.add(titleLabel);
-		
+	}
+	
+	private void addTags(MemObject mem) {
 		tagLabel = new JLabel(" " + Arrays.toString(mem.getTags()));
 		tagLabel.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		tagLabel.setForeground(Color.red);
 		infoPanel.add(tagLabel);
-		
+	}
+
+	private void addBottomSeparator() {
 		bottomSeparatorLabel = new JLabel(" ");
 		bottomSeparatorLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		infoPanel.add(bottomSeparatorLabel);
-		
-		add(infoPanel, BorderLayout.NORTH);
-		
-		
+	}
+
+	private void addMemToView(MemObject mem) {
 		switch(mem.getType()) {
 		case IMAGE:
 			MemPanelImage imageMem = new MemPanelImage(mem);
@@ -74,9 +84,19 @@ public class MemPanel extends JPanel {
 		case VIDEO:
 			MemPanelVideo videoMem = new MemPanelVideo(mem);
 			add(videoMem, BorderLayout.CENTER);
-		}
-		setSize(700, getMinimumSize().height);
-		validate();
+			break;
+		case UNDEFINED:
+			addErrorMemToView();
+			break;
+		}		
+	}
+
+	private void addErrorMemToView() {
+		URL url = getClass().getResource("/img/UndefinedProblem.png");
+		System.out.println(url);
+		ImageIcon errorIcon = new ImageIcon(url);
+		MemPanelImage errorMem = new MemPanelImage(errorIcon);
+		add(errorMem, BorderLayout.CENTER);
 	}
 	
 }
