@@ -68,52 +68,15 @@ public class MemPanel extends JPanel {
 		
 		switch(mem.getType()) {
 		case IMAGE:
-			JPanel imagePanel = new JPanel();
-			imagePanel.setLayout(new BorderLayout());
-			imagePanel.setBackground(Color.DARK_GRAY);
-			imageDisplayLabel = new JLabel(mem.getImage(), JLabel.CENTER);
-			imageDisplayLabel.setBackground(Color.white);
-			imageDisplayLabel.setSize(new Dimension(getWidth(), imageDisplayLabel.getMinimumSize().height));
-			imagePanel.add(imageDisplayLabel, BorderLayout.CENTER);
-			add(imagePanel, BorderLayout.CENTER);
+			MemPanelImage imageMem = new MemPanelImage(mem);
+			add(imageMem, BorderLayout.CENTER);
 			break;
 		case VIDEO:
-			getVideo(mem);
+			MemPanelVideo videoMem = new MemPanelVideo(mem);
+			add(videoMem, BorderLayout.CENTER);
 		}
 		setSize(700, getMinimumSize().height);
 		validate();
 	}
 	
-	public void getVideo(MemObject mem) {
-         String url = mem.getContentURL();
-         JFXPanel jfxPanel = new JFXPanel();
-         jfxPanel.setAlignmentX(RIGHT_ALIGNMENT);
-         JPanel wraperPanel = new JPanel();
-         wraperPanel.setLayout(new BorderLayout());
-         JPanel videoPanel = new JPanel();
-         videoPanel.setLayout(new BorderLayout());
-         videoPanel.setBackground(Color.DARK_GRAY);
-
-         Media media = new Media(url);
-         MediaPlayer player = new MediaPlayer(media);
-         MediaView view = new MediaView(player);
-         
-         Group g = new Group(view);
-         Scene s = new Scene(g, mem.getVideoSize().width, mem.getVideoSize().height);
-         jfxPanel.setScene(s);
-
-         videoPanel.add(jfxPanel, BorderLayout.CENTER);
-         JButton play = new JButton("Play!");
-         videoPanel.add(play, BorderLayout.SOUTH);
-         play.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				player.seek(Duration.ZERO);
-				player.play();
-			}
-		});
-         wraperPanel.add(videoPanel, BorderLayout.CENTER);
-         add(wraperPanel, BorderLayout.CENTER);
-	}
 }
