@@ -2,6 +2,7 @@ package com.skiba.fun.memscraper.SwingGUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
@@ -15,6 +16,7 @@ import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 
 public class MemPanel extends JPanel {
+	private int panelWidth = 700;
 
 	private JLabel titleLabel;
 	private JLabel tagLabel;
@@ -26,7 +28,7 @@ public class MemPanel extends JPanel {
 		initializeMemInformationHeader(mem);	
 		addMemToView(mem);
 		
-		setSize(700, getMinimumSize().height);
+		setSize(panelWidth, getMinimumSize().height);
 		validate();
 	}
 	
@@ -57,9 +59,11 @@ public class MemPanel extends JPanel {
 	}
 
 	private void addTitle(MemInterface mem) {
-		titleLabel = new JLabel(" " + mem.getTitle() + " [" + mem.getRating() + "]");
+		String title = "<html>" + mem.getTitle() + " [" + mem.getRating() + "]" +"</html>";
+		titleLabel = new JLabel(title);	
 		titleLabel.setForeground(Color.red);
 		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		titleLabel.setMaximumSize(new Dimension(panelWidth, Integer.MAX_VALUE));
 		infoPanel.add(titleLabel);
 	}
 	
