@@ -11,9 +11,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-
+import com.skiba.fun.memscraper.DemotywatoryScraper.MemScraperDemotywatory;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemScraper;
+import com.skiba.fun.memscraper.Mem.MemInterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,7 +28,7 @@ public class MemscraperMainWindow extends JFrame{
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
 
-	private List<MemObject> mems;
+	private List<MemInterface> mems;
 	
 	private int currentPage = 1;
 	private AtomicInteger lastMemeIndex = new AtomicInteger(0);
@@ -123,9 +124,12 @@ public class MemscraperMainWindow extends JFrame{
 	}
 
 	private synchronized void loadMemInfo() {
-		MemScraper scraper = new MemScraper();
+		/*MemScraper scraper = new MemScraper();
 		mems.addAll(scraper.loadMemsFromPage(currentPage));
-		setTitle("JBZD scraper [Strona: "+ currentPage +"]");
+		setTitle("JBZD scraper [Strona: "+ currentPage +"]");*/
+		MemScraperDemotywatory scraper = new MemScraperDemotywatory();
+		
+		mems.addAll(scraper.loadMemsFromPage(currentPage));
 	}
 	
 	private synchronized void addMemPanel() {
