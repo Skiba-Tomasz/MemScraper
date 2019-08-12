@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObject.MemType;
+import com.skiba.fun.memscraper.Mem.MemInterface;
 
 public class MemScraper {
 	private final String domainURL = "https://jbzdy.net/str/";
@@ -61,19 +61,19 @@ public class MemScraper {
 		return tags;
 	}
 	
-	private int getMemPostRating(Element post) {
-		return Integer.parseInt(post.select("div.content-info").select("div.content-actions").select("div").select("span").text());
+	private String getMemPostRating(Element post) {
+		return post.select("div.content-info").select("div.content-actions").select("div").select("span").text();
 	}
 	
 	private void getAndSetMemContent(MemObject mem, Element post) {
 		if(!getMemPostImageUrl(post).isEmpty()) {
-			mem.setType(MemType.IMAGE);
+			mem.setType(MemInterface.MemType.IMAGE);
 			mem.setContentURL(memContentURL);
 		}else if(!getMemPostVideoUrl(post).isEmpty()) {
-			mem.setType(MemType.VIDEO);
+			mem.setType(MemInterface.MemType.VIDEO);
 			mem.setContentURL(memContentURL);
 			Dimension videoDimension = getMemPostVideoSize(post);
-			if(videoDimension == null) mem.setType(MemType.UNDEFINED);
+			if(videoDimension == null) mem.setType(MemInterface.MemType.UNDEFINED);
 			else mem.setVideoSize(videoDimension);
 		}
 	}
