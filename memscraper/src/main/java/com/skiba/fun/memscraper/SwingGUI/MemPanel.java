@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.Arrays;
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
+import com.skiba.fun.memscraper.Mem.MemInterface;
 
 public class MemPanel extends JPanel {
 
@@ -20,7 +21,7 @@ public class MemPanel extends JPanel {
 	private JLabel bottomSeparatorLabel, topSeparatorLabel;
 	private JPanel infoPanel;
 
-	public MemPanel(MemObject mem) {	
+	public MemPanel(MemInterface mem) {	
 		initializeLayout();	
 		initializeMemInformationHeader(mem);	
 		addMemToView(mem);
@@ -34,7 +35,7 @@ public class MemPanel extends JPanel {
 		setBackground(Color.DARK_GRAY);
 	}
 
-	private void initializeMemInformationHeader(MemObject mem) {
+	private void initializeMemInformationHeader(MemInterface mem) {
 		infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 		infoPanel.setBackground(Color.darkGray);
@@ -42,7 +43,7 @@ public class MemPanel extends JPanel {
 		add(infoPanel, BorderLayout.NORTH);
 	}
 
-	private void addInformationComponents(MemObject mem) {
+	private void addInformationComponents(MemInterface mem) {
 		addTopSpacingSeparator();	
 		addTitle(mem);
 		addTags(mem);
@@ -55,15 +56,15 @@ public class MemPanel extends JPanel {
 		infoPanel.add(topSeparatorLabel);
 	}
 
-	private void addTitle(MemObject mem) {
+	private void addTitle(MemInterface mem) {
 		titleLabel = new JLabel(" " + mem.getTitle() + " [" + mem.getRating() + "]");
 		titleLabel.setForeground(Color.red);
 		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		infoPanel.add(titleLabel);
 	}
 	
-	private void addTags(MemObject mem) {
-		tagLabel = new JLabel(" " + Arrays.toString(mem.getTags()));
+	private void addTags(MemInterface mem) {
+		tagLabel = new JLabel(Arrays.toString(mem.getTags()));
 		tagLabel.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		tagLabel.setForeground(Color.red);
 		infoPanel.add(tagLabel);
@@ -75,7 +76,7 @@ public class MemPanel extends JPanel {
 		infoPanel.add(bottomSeparatorLabel);
 	}
 
-	private void addMemToView(MemObject mem) {
+	private void addMemToView(MemInterface mem) {
 		switch(mem.getType()) {
 		case IMAGE:
 			MemPanelImage imageMem = new MemPanelImage(mem);

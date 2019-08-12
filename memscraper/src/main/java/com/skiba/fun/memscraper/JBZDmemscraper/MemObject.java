@@ -10,11 +10,13 @@ import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
 
+import com.skiba.fun.memscraper.Mem.MemInterface;
 
-public class MemObject {
-	public enum MemType{
+
+public class MemObject implements MemInterface{
+/*	public enum MemType{
 		IMAGE, VIDEO, UNDEFINED
-	}
+	}*/
 	private MemType type = MemType.UNDEFINED;
 	
 	private String contentURL;
@@ -22,7 +24,7 @@ public class MemObject {
 	private Dimension videoSize;
 	private String title = "Brak tytu³u";
 	private String[] tags = new String[] {"Brak tagu"};
-	private int rating;
+	private String rating;
 	private String url = "Brak linku";
 	
 
@@ -68,11 +70,11 @@ public class MemObject {
 		this.tags = tags;
 	}
 
-	public int getRating() {
+	public String getRating() {
 		return rating;
 	}
 
-	public void setRating(int rating) {
+	public void setRating(String rating) {
 		this.rating = rating;
 	}
 

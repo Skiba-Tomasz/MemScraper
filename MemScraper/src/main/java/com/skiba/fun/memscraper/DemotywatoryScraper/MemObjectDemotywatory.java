@@ -9,11 +9,10 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import com.skiba.fun.memscraper.Mem.MemInterface;
 
-public class MemObjectDemotywatory {
-	public enum MemType{
-		IMAGE, VIDEO, UNDEFINED
-	}
+
+public class MemObjectDemotywatory implements MemInterface{
 	private MemType type = MemType.UNDEFINED;
 	
 	private String contentURL;
@@ -111,5 +110,10 @@ public class MemObjectDemotywatory {
 			e.printStackTrace();
 		}
 		this.image = new ImageIcon(image);
+	}
+
+	@Override
+	public String getRating() {
+		return rating;
 	}
 }

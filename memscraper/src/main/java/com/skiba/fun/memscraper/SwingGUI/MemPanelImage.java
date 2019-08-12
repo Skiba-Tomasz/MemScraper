@@ -9,11 +9,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
+import com.skiba.fun.memscraper.Mem.MemInterface;
 
 public class MemPanelImage extends JPanel{
 	private JLabel imageDisplayLabel;
 	
-	public MemPanelImage(MemObject mem) {
+	public MemPanelImage(MemInterface mem) {
 		initializeLayout();
 		imageDisplayLabel = setImageToLabelView(mem.getImage());
 		add(imageDisplayLabel, BorderLayout.CENTER);
