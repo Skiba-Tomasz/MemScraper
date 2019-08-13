@@ -5,20 +5,22 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.net.URL;
 import java.util.Arrays;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
+import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 
 public class MemPanel extends JPanel {
 	private int panelWidth = 700;
 
-	private JLabel titleLabel;
+	private JTextArea titleTextArea;
 	private JLabel tagLabel;
 	private JLabel bottomSeparatorLabel, topSeparatorLabel;
 	private JPanel infoPanel;
@@ -27,7 +29,6 @@ public class MemPanel extends JPanel {
 		initializeLayout();	
 		initializeMemInformationHeader(mem);	
 		addMemToView(mem);
-		
 		setSize(panelWidth, getMinimumSize().height);
 		validate();
 	}
@@ -40,8 +41,11 @@ public class MemPanel extends JPanel {
 	private void initializeMemInformationHeader(MemInterface mem) {
 		infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-		infoPanel.setBackground(Color.darkGray);
+		
+		if(SharedData.getInstance().isDebugMode())infoPanel.setBackground(Color.ORANGE);
+		else infoPanel.setBackground(Color.DARK_GRAY);
 		addInformationComponents(mem);	
+		infoPanel.setMaximumSize(infoPanel.getMinimumSize());
 		add(infoPanel, BorderLayout.NORTH);
 	}
 
@@ -55,21 +59,34 @@ public class MemPanel extends JPanel {
 	private void addTopSpacingSeparator() {
 		topSeparatorLabel = new JLabel(" ");
 		topSeparatorLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		topSeparatorLabel.setOpaque(true);
+		if(SharedData.getInstance().isDebugMode())topSeparatorLabel.setBackground(Color.GREEN);
+		else topSeparatorLabel.setBackground(Color.DARK_GRAY);
 		infoPanel.add(topSeparatorLabel);
 	}
 
 	private void addTitle(MemInterface mem) {
-		String title = "<html>" + mem.getTitle() + " [" + mem.getRating() + "]" +"</html>";
-		titleLabel = new JLabel(title);	
-		titleLabel.setForeground(Color.red);
-		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		titleLabel.setMaximumSize(new Dimension(panelWidth, Integer.MAX_VALUE));
-		infoPanel.add(titleLabel);
+		String title =  mem.getTitle() + " [" + mem.getRating() + "]";//"<html>" + mem.getTitle() + " [" + mem.getRating() + "]" +"</html>";
+		titleTextArea = new JTextArea(title);
+		titleTextArea.setAlignmentX(LEFT_ALIGNMENT);
+		titleTextArea.setLineWrap(true);
+		titleTextArea.setWrapStyleWord(true);
+		titleTextArea.setForeground(Color.red);
+		titleTextArea.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		titleTextArea.setOpaque(true);
+		if(SharedData.getInstance().isDebugMode())titleTextArea.setBackground(Color.BLUE);
+		else titleTextArea.setBackground(Color.DARK_GRAY);
+		titleTextArea.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+		infoPanel.add(titleTextArea);
 	}
 	
 	private void addTags(MemInterface mem) {
 		tagLabel = new JLabel(Arrays.toString(mem.getTags()));
 		tagLabel.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		if(SharedData.getInstance().isDebugMode()) {
+			tagLabel.setOpaque(true);
+			tagLabel.setBackground(Color.PINK);
+		}else tagLabel.setBackground(Color.DARK_GRAY);
 		tagLabel.setForeground(Color.red);
 		infoPanel.add(tagLabel);
 	}
@@ -77,13 +94,17 @@ public class MemPanel extends JPanel {
 	private void addBottomSeparator() {
 		bottomSeparatorLabel = new JLabel(" ");
 		bottomSeparatorLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		if(SharedData.getInstance().isDebugMode()) {
+			bottomSeparatorLabel.setOpaque(true);
+			bottomSeparatorLabel.setBackground(Color.GREEN);
+		} else bottomSeparatorLabel.setBackground(Color.DARK_GRAY);
 		infoPanel.add(bottomSeparatorLabel);
 	}
 
 	private void addMemToView(MemInterface mem) {
 		switch(mem.getType()) {
 		case IMAGE:
-			MemPanelImage imageMem = new MemPanelImage(mem);
+			MemPanelImage imageMem = new MemPanelImage(mem);	
 			add(imageMem, BorderLayout.CENTER);
 			break;
 		case VIDEO:
