@@ -2,12 +2,15 @@ package com.skiba.fun.memscraper.SwingGUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
+import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 
 import javafx.embed.swing.JFXPanel;
@@ -28,6 +31,11 @@ public class MemPanelVideo extends JPanel implements Runnable{
 	private JPanel videoPlayerPanel;
 	private JFXPanel videoPanel;
 	private MediaPlayer player;
+	private Group group;
+	private Scene scene;
+	private MediaView mediaView;
+	private Media media;
+	private JLabel thumbnail;
 	
 	public MemPanelVideo(MemInterface mem) {
 		this.mem = mem;
@@ -46,21 +54,26 @@ public class MemPanelVideo extends JPanel implements Runnable{
         videoPlayerPanel.setLayout(new BorderLayout());
         videoPlayerPanel.setBackground(Color.DARK_GRAY);     
         initializeVideoPanel();
-        videoPlayerPanel.add(videoPanel, BorderLayout.CENTER);
+        System.out.println(mem.getThumbnail());
+        thumbnail = new JLabel(mem.getThumbnail(), JLabel.CENTER);
+        System.out.println("LABEL :" + mem.getThumbnail().getIconHeight());
+		thumbnail.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+		thumbnail.setPreferredSize(new Dimension(mem.getThumbnail().getIconWidth(), mem.getThumbnail().getIconHeight()));
+		videoPlayerPanel.add(thumbnail, BorderLayout.CENTER);
         initializeMediaControllPanel(player);   
         videoPlayerPanel.add(mediaControllPanel, BorderLayout.SOUTH);
+		revalidate();
+		repaint();
 	}
 
 	private void initializeVideoPanel() {
-		String source = mem.getContentURL();
+		
         videoPanel = new JFXPanel();
         videoPanel.setAlignmentX(RIGHT_ALIGNMENT);
-        Media media = new Media(source);
-        player = new MediaPlayer(media);
-        MediaView view = new MediaView(player);    
-        Group g = new Group(view);
-        Scene s = new Scene(g, mem.getVideoSize().width, mem.getVideoSize().height);
-        videoPanel.setScene(s);
+        
+        //scene = new Scene(group, group.getLayoutX(), group.getLayoutY()/*, mem.getVideoSize().width, mem.getVideoSize().height*/);
+        //videoPanel.setMaximumSize(new Dimension((int)scene.getWidth(),(int)scene.getHeight()));
+       // videoPanel.setScene(scene);
 	}
 
 	private void initializeMediaControllPanel(MediaPlayer player) {
@@ -77,13 +90,76 @@ public class MemPanelVideo extends JPanel implements Runnable{
         restart = new JButton("Resart");
         buttonPanel.add(restart);   
         mute = new JButton("Mute");
-        buttonPanel.add(mute);      
-        addButtonMediaPlayerControllsActions(player);    
+        buttonPanel.add(mute); 
+        addButtonMediaPlayerControllsActions();    
         mediaControllPanel.add(buttonPanel, BorderLayout.CENTER);
 	}
 
-	private void addButtonMediaPlayerControllsActions(MediaPlayer player) {
-		play.addActionListener((ActionEvent e) -> player.play());			
+	private void addButtonMediaPlayerControllsActions() {
+		play.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println("PLAY");
+				videoPlayerPanel.remove(thumbnail);
+				videoPlayerPanel.add(videoPanel, BorderLayout.CENTER);
+				String source = mem.getContentURL();
+				System.out.println("SOURCE " + source);
+				Thread mediaLoader = new Thread() {
+					public void run() {
+						System.out.println("MEDIALOADER");
+						media = new Media(source);
+						player = new MediaPlayer(media);
+				        mediaView = new MediaView(player);    
+				        group = new Group(mediaView);
+				        while(group.getLayoutBounds().getWidth()<=1) {
+							try {
+								System.out.println("MEDIALOADER WAIT");
+								Thread.sleep(200);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+				        if(group.getLayoutBounds().getWidth()> 600) {
+				        	System.out.println("GROUP");
+				        	double ratio = group.getLayoutBounds().getHeight()/group.getLayoutBounds().getWidth();
+				        	double scale = 600/group.getLayoutBounds().getWidth();
+				        	group.setTranslateX((-(group.getLayoutBounds().getWidth())/2)+((group.getLayoutBounds().getWidth()*scale)/2));
+				        	group.setTranslateY((-(group.getLayoutBounds().getHeight())/2)+((group.getLayoutBounds().getHeight()*ratio)/2));
+				        	group.setScaleX(scale);
+				        	group.setScaleY(ratio);
+				        	
+				        } 
+					}
+				};
+				if(media == null || player == null || mediaView == null || group == null)mediaLoader.start();
+				Thread playerInitializer = new Thread() {
+					public void run() {
+						while(mediaLoader.isAlive()) {
+							try {
+								System.out.println("WAITING FOR MEDIA");
+								Thread.sleep(200);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						System.out.println("FINISHING AND PLAY");
+						scene = new Scene(group, group.getLayoutBounds().getWidth()*group.getScaleX(), group.getLayoutBounds().getHeight()*group.getScaleY()/*, mem.getVideoSize().width, mem.getVideoSize().height*/);
+						
+						
+						System.out.println("DIMENSION :       " +  group.getLayoutBounds().getWidth() + "x"+group.getLayoutBounds().getHeight() + " l " + mem.getVideoSize().width + " x " + mem.getVideoSize().height);
+				        videoPanel.setMaximumSize(new Dimension((int)(group.getLayoutBounds().getWidth()*group.getScaleX()),(int)(group.getLayoutBounds().getHeight()*group.getScaleY())));
+						videoPanel.setScene(scene);
+						player.play();
+					}
+				};
+				if(scene == null)playerInitializer.start();
+				else player.play();
+			}
+		});			
         stop.addActionListener((ActionEvent e) -> player.pause());
         restart.addActionListener((ActionEvent e) -> player.seek(Duration.ZERO));
         mute.addActionListener((ActionEvent e) ->player.setMute(!player.isMute()));
