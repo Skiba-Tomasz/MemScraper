@@ -10,10 +10,12 @@ public interface MemInterface {
 	}
 	public MemType getType();
 	public ImageIcon getImage();
+	public ImageIcon getThumbnail();
 	public String getContentURL();
 	public Dimension getVideoSize();
 	
 	public String getTitle();
 	public String getRating();
 	public String[] getTags();
+	
 }
