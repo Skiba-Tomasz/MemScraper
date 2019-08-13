@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
+import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 
 public class MemPanelImage extends JPanel{
@@ -16,13 +16,22 @@ public class MemPanelImage extends JPanel{
 	
 	public MemPanelImage(MemInterface mem) {
 		initializeLayout();
+		if(SharedData.getInstance().isDebugMode())setBackground(Color.CYAN);
 		imageDisplayLabel = setImageToLabelView(mem.getImage());
 		add(imageDisplayLabel, BorderLayout.CENTER);
+		setMaximumSize(getMinimumSize());
+		revalidate();
+		repaint();
 	}
 
 	public MemPanelImage(ImageIcon icon) {
 		initializeLayout();
 		imageDisplayLabel = setImageToLabelView(icon);
+		if(SharedData.getInstance().isDebugMode()) {
+			imageDisplayLabel.setOpaque(true);
+			imageDisplayLabel.setBackground(Color.RED);
+		}
+		imageDisplayLabel.setMaximumSize(imageDisplayLabel.getMinimumSize());
 		add(imageDisplayLabel, BorderLayout.CENTER);
 	}
 	
