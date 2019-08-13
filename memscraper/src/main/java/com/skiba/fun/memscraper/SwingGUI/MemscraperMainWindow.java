@@ -2,6 +2,8 @@ package com.skiba.fun.memscraper.SwingGUI;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
@@ -12,9 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 import com.skiba.fun.memscraper.DemotywatoryScraper.MemScraperDemotywatory;
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObject;
-import com.skiba.fun.memscraper.JBZDmemscraper.MemScraper;
+import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
+import com.skiba.fun.memscraper.JBZDmemscraper.MemScraperJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
+import com.sun.glass.ui.Cursor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,25 +25,42 @@ import java.awt.Component;
 
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Label;
 
 public class MemscraperMainWindow extends JFrame{
-
+	
+	private enum Domains{
+		JBZD, JBZD_VIDEO, DEMOTYWATORY
+	}
+	private Domains currnetDomain = Domains.JBZD_VIDEO;
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
 
 	private List<MemInterface> mems;
 	
 	private int currentPage = 1;
-	private AtomicInteger lastMemeIndex = new AtomicInteger(0);
+	private int lastMemeLoadedIndex = 0;
 	
-	private int scrollBarTrigger = 1800;
+	private int scrollBarTrigger = 3000;
 	private int scrollIncreasement = 32;
-	private int memsToLoadByStep = 2;
+	private int memsToLoadByStep = 1;
 	
 	public enum LoadState{
 		LOADING, WAITING
 	}
 	public LoadState loadingState = LoadState.LOADING;
+	private JTextField pageNumberTextField;
+	private JComboBox<Domains> domainComboBox;
+	private JButton changeDomainButton;
+	private Thread worker;
+	private Thread domainWorker;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -60,10 +80,40 @@ public class MemscraperMainWindow extends JFrame{
 		mems = new ArrayList<>();
 		
 		initializeFrame(); 	
-		initializeFrameComponents();			
-		loadStartingPage();
+		initializeFrameComponents();
+		
+		
+		JPanel navigationPanel = new JPanel();
+		getContentPane().add(navigationPanel, BorderLayout.NORTH);
+		navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.X_AXIS));
+		
+		pageNumberTextField = new JTextField();
+		pageNumberTextField.setMaximumSize(new Dimension(100, 20));
+		navigationPanel.add(pageNumberTextField);
+		pageNumberTextField.setColumns(10);
+		
+		JButton changePageButton = new JButton("Zmieñ stronê");
+		changePageButton.addActionListener((ActionEvent e) -> changePage());
+		navigationPanel.add(changePageButton);
+		
+		domainComboBox = new JComboBox<Domains>(Domains.values());
+		domainComboBox.setSelectedItem((Object) currnetDomain); 
+		domainComboBox.setMinimumSize(new Dimension(300, 20));
+		navigationPanel.add(domainComboBox);
+		
+		changeDomainButton = new JButton("Zmieñ domenê");
+		changeDomainButton.addActionListener(new ActionListener() {
 			
-		pack();	
+			public void actionPerformed(ActionEvent e) {
+				currnetDomain = (Domains)domainComboBox.getSelectedItem();
+				currentPage = 0;
+				changeDomain();
+				
+			}
+		});
+		navigationPanel.add(changeDomainButton);
+		loadCurrentPage();		
+		pack();			
 	}
 	
 	private void initializeFrame() {
@@ -92,6 +142,33 @@ public class MemscraperMainWindow extends JFrame{
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		addScrollListener();
 	}
+	
+	private synchronized void changePage() {
+		loadPage(true);
+	}
+	
+	private synchronized void changeDomain() {
+		loadPage(false);
+		//scrollPane.getVerticalScrollBar().setValue(0);
+	}
+	
+	private synchronized void loadPage(boolean readTextBox) {
+		loadingState = LoadState.LOADING;
+		if(readTextBox)currentPage = Integer.parseInt(pageNumberTextField.getText());
+		else currentPage =1;
+		mems = new ArrayList<MemInterface>();
+		lastMemeLoadedIndex = 0;
+		System.out.println("lats index" + lastMemeLoadedIndex);
+		for(Component c : contentPanel.getComponents()) {
+			contentPanel.remove(c);
+		}
+		contentPanel.revalidate();
+		contentPanel.repaint();
+		scrollPane.getVerticalScrollBar().setValue(0);
+		loadCurrentPage();
+		
+		loadingState = LoadState.WAITING;
+	}
 
 	private void addScrollListener() {
 		scrollPane.getVerticalScrollBar().addAdjustmentListener((AdjustmentEvent e) -> loadNewIfReachedBottom());
@@ -99,11 +176,13 @@ public class MemscraperMainWindow extends JFrame{
 	}
 	
 	private void loadNewIfReachedBottom() {
+		//System.out.println("Viewpoint of scrollbar: " + scrollPane.getVerticalScrollBar().getValue());
 		if(loadingState == LoadState.WAITING) {
-			if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger) {
+			if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger && scrollPane.getVerticalScrollBar().getValue() != 0) {
+				System.out.println("Reached bottom");
 				loadNewMems();	
 			}
-		}
+		}/*else System.out.println("ASSHOLE");*/
 	}
 	
 	private void scrollBehaviour(MouseWheelEvent e) {
@@ -116,54 +195,93 @@ public class MemscraperMainWindow extends JFrame{
 		
 	}
 	
-	private void loadStartingPage() {
-		loadMemInfo();
-		for(int i = 0; i < mems.size(); i++) {
-			addMemPanel();
+	private void loadCurrentPage() {
+		if(domainWorker ==null||!domainWorker.isAlive()) {
+		domainWorker = new Thread() {
+			public void run() {
+				JOptionPane optionPane = new JOptionPane("£adowanie proszê czekaæ", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);				
+				JDialog dialog = new JDialog();
+				dialog.setContentPane(optionPane);
+				dialog.setSize(new Dimension(300,100));
+				dialog.setLocation(getWidth()/2 - dialog.getWidth()/2, getHeight()/2 - dialog.getHeight()/2);
+				dialog.setModal(false);
+				dialog.setAlwaysOnTop(true);
+				dialog.setVisible(true);
+				loadMemInfo();
+				for(int i = 0; i < mems.size(); i++) {
+					addMemPanel();
+				}
+				dialog.dispose();
+				refreshWindow();
+			}
+		};
+		domainWorker.start();
 		}
 	}
 
 	private synchronized void loadMemInfo() {
-		/*MemScraper scraper = new MemScraper();
+		switch(currnetDomain) {
+			case JBZD:
+				MemScraperJBZD jbzdScraper = new MemScraperJBZD("https://jbzdy.net/str/");
+				mems.addAll(jbzdScraper.loadMemsFromPage(currentPage));
+				setTitle("JBZD scraper [Strona: "+ currentPage +"]");
+				break;
+			case DEMOTYWATORY:
+				MemScraperDemotywatory demotywatoryScraper = new MemScraperDemotywatory("https://demotywatory.pl/page/");
+				mems.addAll(demotywatoryScraper.loadMemsFromPage(currentPage));
+				setTitle("Demotywatory scraper [Strona: "+ currentPage +"]");
+				break;
+			case JBZD_VIDEO:
+				MemScraperJBZD jbzdVideoScraper = new MemScraperJBZD("https://jbzdy.net/video/");
+				mems.addAll(jbzdVideoScraper.loadMemsFromPage(currentPage));
+				setTitle("JBZD VIDEO scraper [Strona: "+ currentPage +"]");
+				break;
+		}
+/*		MemScraper scraper = new MemScraper();
 		mems.addAll(scraper.loadMemsFromPage(currentPage));
-		setTitle("JBZD scraper [Strona: "+ currentPage +"]");*/
+		setTitle("JBZD scraper [Strona: "+ currentPage +"]");
 		MemScraperDemotywatory scraper = new MemScraperDemotywatory();
-		
-		mems.addAll(scraper.loadMemsFromPage(currentPage));
+		mems.addAll(scraper.loadMemsFromPage(currentPage));*/
 	}
 	
 	private synchronized void addMemPanel() {
-		MemPanel memPanel = new MemPanel(mems.get(lastMemeIndex.intValue()));
-		contentPanel.add(memPanel);
-		lastMemeIndex.addAndGet(1);
-		refreshWindow();
+		MemPanel memPanel = new MemPanel(mems.get(lastMemeLoadedIndex++));
+		contentPanel.add(memPanel);		
 	}
 
 	private void refreshWindow() {
+		
 		contentPanel.revalidate();
 		contentPanel.repaint();
 		scrollPane.revalidate();
 		scrollPane.repaint();
 		revalidate();
 		repaint();
-		loadingState = LoadState.WAITING;
+		loadingState = LoadState.WAITING;//???
 	}
 	
 	private synchronized void loadNewMems() {
-		loadingState = LoadState.LOADING;
-		Thread worker = new Thread() {
+		if(worker == null || !worker.isAlive()) {
+		worker = new Thread() {
 			public void run() {
-				if(lastMemeIndex.intValue() >= mems.size() - memsToLoadByStep) {
+				getContentPane().setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+				loadingState = LoadState.LOADING;
+				if(lastMemeLoadedIndex >= mems.size() - memsToLoadByStep) {
 					currentPage++;
+					System.out.println("Page++");
 					loadMemInfo();
 				}
 				for(int i = 0; i < memsToLoadByStep; i++) {
 					addMemPanel();
+					refreshWindow();
 				}	
+				getContentPane().setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 				loadingState = LoadState.WAITING;
 			}
 		};
 		worker.start();
+		System.out.println("Starting to load memes");
+		}else System.out.println("Previous worker not finished");
 	}	
 
 }
