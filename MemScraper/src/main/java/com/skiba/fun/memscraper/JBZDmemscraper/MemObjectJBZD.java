@@ -1,4 +1,4 @@
-package com.skiba.fun.memscraper.DemotywatoryScraper;
+package com.skiba.fun.memscraper.JBZDmemscraper;
 
 import java.awt.Dimension;
 import java.awt.Image;
@@ -7,12 +7,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+
 import javax.swing.ImageIcon;
 
 import com.skiba.fun.memscraper.Mem.MemInterface;
 
 
-public class MemObjectDemotywatory implements MemInterface{
+public class MemObjectJBZD implements MemInterface{
+/*	public enum MemType{
+		IMAGE, VIDEO, UNDEFINED
+	}*/
 	private MemType type = MemType.UNDEFINED;
 	
 	private String contentURL;
@@ -24,7 +28,6 @@ public class MemObjectDemotywatory implements MemInterface{
 	private String[] tags = new String[] {"Brak tagu"};
 	private String rating;
 	private String url = "Brak linku";
-
 	
 
 	
@@ -37,11 +40,13 @@ public class MemObjectDemotywatory implements MemInterface{
 	}
 
 	public ImageIcon getImage() {
-		if(image == null) this.image = pullImage(contentURL);
-		
+		if(image == null)this.image = pullImage(contentURL);
 		return image;
 	}
 
+	public void setImage(ImageIcon image) {
+		this.image = image;
+	}
 
 	public Dimension getVideoSize() {
 		return videoSize;
@@ -53,36 +58,10 @@ public class MemObjectDemotywatory implements MemInterface{
 
 	public String getTitle() {
 		return title;
-	}	
-
-	public ImageIcon getThumbnail() {
-		if(thumbnail == null)this.thumbnail = pullImage(thumbnailURL);
-		return thumbnail;
 	}
 
-	public String getThumbnailURL() {
-		return thumbnailURL;
-	}
-
-	public void setThumbnailURL(String thumbnailURL) {
-		this.thumbnailURL = thumbnailURL;
-	}
-
-	public void setDataFromTitleString(String title) {
-		//System.out.println("===MEME===");
-		this.title = title.substring(0, title.lastIndexOf("Mocne S³abe +"));
-		//System.out.println("TIT: "+this.title);
-		String ratingAndDate = title.substring(title.lastIndexOf("Mocne S³abe +"));
-		//System.out.println(ratingAndDate);
-		//System.out.println(ratingAndDate.indexOf(')'));
-		String[] splitedRatingAndDate = ratingAndDate.split("\\)");
-		//System.out.println(splitedRatingAndDate[0] + "////" + splitedRatingAndDate[1]);
-		this.rating = splitedRatingAndDate[0] + ")";
-		//System.out.println(splitedRatingAndDate[1]);
-		this.tags[0] = splitedRatingAndDate[1].substring(1, splitedRatingAndDate[1].lastIndexOf("Skomentuj ("));
-		//System.out.println("RAT: " +this.rating);
-		//System.out.println("TAG: " + this.tags[0]);
-		//System.out.println("===MEME===");
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String[] getTags() {
@@ -93,6 +72,13 @@ public class MemObjectDemotywatory implements MemInterface{
 		this.tags = tags;
 	}
 
+	public String getRating() {
+		return rating;
+	}
+
+	public void setRating(String rating) {
+		this.rating = rating;
+	}
 
 	public String getUrl() {
 		return url;
@@ -110,6 +96,20 @@ public class MemObjectDemotywatory implements MemInterface{
 		this.type = type;
 	}
 	
+	public String getThumbnailURL() {
+		return thumbnailURL;
+	}
+
+	public void setThumbnailURL(String thumbnailURL) {
+		this.thumbnailURL = thumbnailURL;
+	}
+
+	public ImageIcon getThumbnail() {
+		if(thumbnail == null)this.thumbnail = pullImage(thumbnailURL);
+		System.out.println("TH" + thumbnail.getIconHeight());
+		return thumbnail;
+	}
+
 	private ImageIcon pullImage(String content) {
 		URL url = null;
 		try {
@@ -124,10 +124,5 @@ public class MemObjectDemotywatory implements MemInterface{
 			e.printStackTrace();
 		}
 		return new ImageIcon(image);
-	}
-
-	@Override
-	public String getRating() {
-		return rating;
 	}
 }

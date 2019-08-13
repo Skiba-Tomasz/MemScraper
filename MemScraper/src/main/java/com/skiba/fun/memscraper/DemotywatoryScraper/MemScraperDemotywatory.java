@@ -13,22 +13,22 @@ import org.jsoup.select.Elements;
 
 
 public class MemScraperDemotywatory {
-	private final String domainURL = "https://demotywatory.pl/page/";
+	private String domainURL;
 	private String memContentURL;
+	
+	public MemScraperDemotywatory(String domain) {
+		this.domainURL = domain;
+	}
 	
 	public List<MemObjectDemotywatory> loadMemsFromPage(int pageNumber) {
 		Elements memPosts = null;
 		try {
 			Document jsDoc = Jsoup.connect(domainURL+pageNumber).get();	
 			Elements postContainer = jsDoc
-					//.select("div.page-wrapper")
-					//.select("div.page-container")
-					//.select("div.page")
 					.select("div#main_container")
 					.select("section.demots").select("article");
-			System.out.println(postContainer.html());
 			memPosts = getMemPosts(postContainer);	
-			System.out.println(memPosts.size());
+			System.out.println("Mems found: " +memPosts.size());
 		} catch (IOException e) {
 			//Handle this later
 			e.printStackTrace();
@@ -50,7 +50,6 @@ public class MemScraperDemotywatory {
 		for(Element post : memPosts) {
 			MemObjectDemotywatory mem = new MemObjectDemotywatory();
 			mem.setDataFromTitleString(getMemPostTitle(post));
-			System.out.println(getMemPostTitle(post));
 			getAndSetMemContent(mem, post);
 			memsFromPosts.add(mem);
 		}
@@ -64,7 +63,9 @@ public class MemScraperDemotywatory {
 	private void getAndSetMemContent(MemObjectDemotywatory mem, Element post) {
 		if(!getMemPostVideoUrl(post).isEmpty()) {
 			mem.setType(MemObjectDemotywatory.MemType.VIDEO);
+			mem.setThumbnailURL(getThumbNailURL(post));
 			mem.setContentURL(memContentURL);
+			System.out.println(mem.getThumbnailURL());
 			Dimension videoDimension = getMemPostVideoSize(post);
 			if(videoDimension == null) mem.setType(MemObjectDemotywatory.MemType.UNDEFINED);
 			else mem.setVideoSize(videoDimension);
@@ -76,22 +77,24 @@ public class MemScraperDemotywatory {
 	
 	private String getMemPostImageUrl(Element post) {
 		String memUrl = post.select("div.demot_pic.image600").select("img").attr("src");	
-		System.out.println("IMG: " + memUrl);
 		memContentURL = memUrl;
 		return memUrl;
 	}
 
 	private String getMemPostVideoUrl(Element post) {
 		String memUrl = post.select("div.demot_pic.image600").select("video").select("source").attr("src");
-		System.out.println("VID: " + memUrl);
 		memContentURL = memUrl;
+		return memUrl;
+	}
+	
+	private String getThumbNailURL(Element post) {
+		String memUrl = post.select("div.demot_pic.image600").select("video").attr("poster");
 		return memUrl;
 	}
 	
 	private Dimension getMemPostVideoSize(Element post) {
 		String atrributesWidth = post.select("div.demot_pic.image600").select("video").attr("width");
 		String atrributesHeight = post.select("div.demot_pic.image600").select("video").attr("height");
-		System.out.println("H: " + atrributesHeight + " W: " + atrributesWidth);
 		if(atrributesHeight.isEmpty() || atrributesWidth.isEmpty()) return null;
 		return new Dimension(Integer.parseInt(atrributesWidth), Integer.parseInt(atrributesHeight));
 	}
