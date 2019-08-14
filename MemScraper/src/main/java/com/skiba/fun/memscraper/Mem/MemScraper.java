@@ -21,21 +21,20 @@ public abstract class MemScraper {
 	protected abstract Dimension collectVideoSize(Element post);
 	
 	protected List<MemObject> getMemObjectsFromMemPosts(Elements memPosts){
-		System.out.println("SCRAPING");
 		List<MemObject> memsFromPosts = new ArrayList<>();
 		for(Element post : memPosts) {
 			MemObject mem = createMemBasedOnPostContent(post);
 			mem.setTitle(collectTitle(post));
 			mem.setRating(collectRating(post));
 			mem.setTags(collectTags(post));
-			getAndSetMemContent(mem, post);
+			initializeMemContent(mem, post);
 			memsFromPosts.add(mem);
 		}
 		return memsFromPosts;
 		
 	}
 	
-	private void getAndSetMemContent(MemObject mem, Element post) {
+	private void initializeMemContent(MemObject mem, Element post) {
 		switch(mem.getType()){
 		case IMAGE:
 			MemObjectImage imageMem = (MemObjectImage) mem;
