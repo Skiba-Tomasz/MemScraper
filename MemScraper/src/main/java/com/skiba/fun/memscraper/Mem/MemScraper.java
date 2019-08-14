@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 public abstract class MemScraper {
 	protected String domainUrl;
 	
-	public abstract List<MemObject> loadMemsFromPage(int pageNumber);
+	public abstract List<MemObject> getMemsFromPage(int pageNumber);
 	protected abstract Elements collectMemPosts(Elements currentPostContainer);
 	protected abstract String collectTitle(Element post);
 	protected abstract String collectRating(Element post);
