@@ -13,12 +13,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import com.skiba.fun.memscraper.DemotywatoryScraper.MemScraperDemotywatory;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemScraperJBZD;
+import com.skiba.fun.memscraper.Mem.Domains;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 import com.skiba.fun.memscraper.Mem.MemObject;
 import com.skiba.fun.memscraper.Mem.MemScraper;
+import com.skiba.fun.memscraper.Mem.MemScraperDemotywatory;
 import com.skiba.fun.memscraper.Mem.MemScraperJbzd;
 import com.sun.glass.ui.Cursor;
 
@@ -39,9 +40,6 @@ import java.awt.Label;
 
 public class MemscraperMainWindow extends JFrame{
 	
-	private enum Domains{
-		JBZD, JBZD_VIDEO, DEMOTYWATORY
-	}
 	private Domains currnetDomain = Domains.JBZD;
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
@@ -223,22 +221,26 @@ public class MemscraperMainWindow extends JFrame{
 	}
 
 	private synchronized void loadMemInfo() {
+		MemScraper scraper = null;
 		switch(currnetDomain) {
 			case JBZD:
-				MemScraper scraper = new MemScraperJbzd();
-				mems.addAll(scraper.loadMemsFromPage(currentPage));
+			case JBZD_VIDEO:
+				scraper = new MemScraperJbzd(currnetDomain);
+				mems.addAll(scraper.getMemsFromPage(currentPage));
 				/*MemScraperJBZD jbzdScraper = new MemScraperJBZD("https://jbzdy.net/str/");
 				mems.addAll(jbzdScraper.loadMemsFromPage(currentPage));*/
 				setTitle("JBZD scraper [Strona: "+ currentPage +"]");
 				break;
 				default :
 					System.out.println("ERRORTYPE");
-/*			case DEMOTYWATORY:
-				MemScraperDemotywatory demotywatoryScraper = new MemScraperDemotywatory("https://demotywatory.pl/page/");
-				mems.addAll(demotywatoryScraper.loadMemsFromPage(currentPage));
+			case DEMOTYWATORY:
+				scraper = new MemScraperDemotywatory();
+				mems.addAll(scraper.getMemsFromPage(currentPage));
+				/*MemScraperDemotywatory demotywatoryScraper = new MemScraperDemotywatory("https://demotywatory.pl/page/");
+				mems.addAll(demotywatoryScraper.loadMemsFromPage(currentPage));*/
 				setTitle("Demotywatory scraper [Strona: "+ currentPage +"]");
 				break;
-			case JBZD_VIDEO:
+			/*case JBZD_VIDEO:
 				MemScraperJBZD jbzdVideoScraper = new MemScraperJBZD("https://jbzdy.net/video/");
 				mems.addAll(jbzdVideoScraper.loadMemsFromPage(currentPage));
 				setTitle("JBZD VIDEO scraper [Strona: "+ currentPage +"]");
