@@ -9,14 +9,23 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class MemScraperJbzd extends MemScraper{
+public final class MemScraperJbzd extends MemScraper{
 	
-	public MemScraperJbzd() {
-		domainUrl = "https://jbzdy.net/str/";
+	public MemScraperJbzd(Domains subDomain) {
+		switch(subDomain) {
+		case JBZD:
+			domainUrl = "https://jbzdy.net/str/";
+			break;
+		case JBZD_VIDEO:
+			domainUrl = "https://jbzdy.net/video/";
+			break;
+		default:
+			domainUrl = "https://jbzdy.net/str/";
+		}
 	}
 
 	@Override
-	public List<MemObject> loadMemsFromPage(int pageNumber) {
+	public List<MemObject> getMemsFromPage(int pageNumber) {
 		Elements memPosts = null;
 		try {
 			Document jsDoc = Jsoup.connect(domainUrl + pageNumber).get();	
