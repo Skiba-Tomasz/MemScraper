@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 import com.skiba.fun.memscraper.Mem.Domains;
-import com.skiba.fun.memscraper.Mem.MemInterface;
 import com.skiba.fun.memscraper.Mem.MemObject;
 import com.skiba.fun.memscraper.Mem.MemScraper;
 import com.skiba.fun.memscraper.Mem.MemScraperDemotywatory;
