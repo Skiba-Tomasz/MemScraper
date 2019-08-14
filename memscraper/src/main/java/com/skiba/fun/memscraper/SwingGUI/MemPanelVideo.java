@@ -75,7 +75,7 @@ public class MemPanelVideo extends JPanel{
 			public void run() {
 				if(processor == null) {
 					processor  = new MemPanelVideoProcessor(mem.getVideoUrl());
-					videoPanel = processor.getVideoJFXPanel();
+					processor.start();
 					while(!processor.isReady()) {
 						try {
 							System.out.println("Waiting for processor");
@@ -83,7 +83,8 @@ public class MemPanelVideo extends JPanel{
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-					}			
+					}
+					videoPanel = processor.getVideoJFXPanel();
 					buttonPanel.setControlsToView();
 					player = processor.getPlayer();
 				}
