@@ -10,6 +10,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class MemScraperJbzd extends MemScraper{
+	
+	public MemScraperJbzd() {
+		domainUrl = "https://jbzdy.net/str/";
+	}
 
 	@Override
 	public List<MemObject> loadMemsFromPage(int pageNumber) {
