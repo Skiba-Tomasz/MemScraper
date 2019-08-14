@@ -57,8 +57,9 @@ public class MemPanelVideo extends JPanel implements Runnable{
         System.out.println(mem.getThumbnail());
         thumbnail = new JLabel(mem.getThumbnail(), JLabel.CENTER);
         System.out.println("LABEL :" + mem.getThumbnail().getIconHeight());
-		thumbnail.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		thumbnail.setPreferredSize(new Dimension(mem.getThumbnail().getIconWidth(), mem.getThumbnail().getIconHeight()));
+		
+		thumbnail.setPreferredSize(new Dimension(mem.getVideoSize().width, mem.getVideoSize().height));
+		thumbnail.setMaximumSize(new Dimension(600, 600));
 		videoPlayerPanel.add(thumbnail, BorderLayout.CENTER);
         initializeMediaControllPanel(player);   
         videoPlayerPanel.add(mediaControllPanel, BorderLayout.SOUTH);
