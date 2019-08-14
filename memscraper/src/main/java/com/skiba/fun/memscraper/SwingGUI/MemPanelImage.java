@@ -8,7 +8,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemObjectImage;
 
 public class MemPanelImage extends JPanel{

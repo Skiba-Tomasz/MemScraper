@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemObjectVideo;
 
 import javafx.embed.swing.JFXPanel;

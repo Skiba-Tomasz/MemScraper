@@ -14,7 +14,6 @@ import java.awt.Font;
 import java.net.URL;
 import java.util.Arrays;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 import com.skiba.fun.memscraper.Mem.MemObject;
 import com.skiba.fun.memscraper.Mem.MemObjectImage;

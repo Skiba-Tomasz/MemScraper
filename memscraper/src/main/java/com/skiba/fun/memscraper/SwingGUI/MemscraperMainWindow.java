@@ -13,8 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
-import com.skiba.fun.memscraper.JBZDmemscraper.MemScraperJBZD;
 import com.skiba.fun.memscraper.Mem.Domains;
 import com.skiba.fun.memscraper.Mem.MemInterface;
 import com.skiba.fun.memscraper.Mem.MemObject;
