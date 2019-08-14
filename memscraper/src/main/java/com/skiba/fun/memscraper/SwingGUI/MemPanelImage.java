@@ -9,15 +9,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
-import com.skiba.fun.memscraper.Mem.MemInterface;
+import com.skiba.fun.memscraper.Mem.MemObjectImage;
 
 public class MemPanelImage extends JPanel{
 	private JLabel imageDisplayLabel;
 	
-	public MemPanelImage(MemInterface mem) {
+	public MemPanelImage(MemObjectImage mem) {
 		initializeLayout();
 		if(SharedData.getInstance().isDebugMode())setBackground(Color.CYAN);
-		imageDisplayLabel = setImageToLabelView(mem.getImage());
+		imageDisplayLabel = setImageToLabelView(mem.getMemImage());
 		add(imageDisplayLabel, BorderLayout.CENTER);
 		setMaximumSize(getMinimumSize());
 		revalidate();

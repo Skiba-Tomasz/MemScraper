@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
-import com.skiba.fun.memscraper.Mem.MemInterface;
+import com.skiba.fun.memscraper.Mem.MemObjectVideo;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -22,7 +22,7 @@ import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
 public class MemPanelVideo extends JPanel implements Runnable{
-	private MemInterface mem;
+	private MemObjectVideo mem;
 	private JButton play;
 	private JButton stop;
 	private JButton restart;
@@ -37,7 +37,7 @@ public class MemPanelVideo extends JPanel implements Runnable{
 	private Media media;
 	private JLabel thumbnail;
 	
-	public MemPanelVideo(MemInterface mem) {
+	public MemPanelVideo(MemObjectVideo mem) {
 		this.mem = mem;
 		setBackground(Color.DARK_GRAY);
 		Thread videoProcesor = new Thread(this);
@@ -104,7 +104,7 @@ public class MemPanelVideo extends JPanel implements Runnable{
 				System.out.println("PLAY");
 				videoPlayerPanel.remove(thumbnail);
 				videoPlayerPanel.add(videoPanel, BorderLayout.CENTER);
-				String source = mem.getContentURL();
+				String source = mem.getVideoUrl();
 				System.out.println("SOURCE " + source);
 				Thread mediaLoader = new Thread() {
 					public void run() {

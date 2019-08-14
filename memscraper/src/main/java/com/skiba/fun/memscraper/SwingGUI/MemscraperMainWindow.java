@@ -17,6 +17,9 @@ import com.skiba.fun.memscraper.DemotywatoryScraper.MemScraperDemotywatory;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.JBZDmemscraper.MemScraperJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
+import com.skiba.fun.memscraper.Mem.MemObject;
+import com.skiba.fun.memscraper.Mem.MemScraper;
+import com.skiba.fun.memscraper.Mem.MemScraperJbzd;
 import com.sun.glass.ui.Cursor;
 
 import java.awt.BorderLayout;
@@ -39,11 +42,11 @@ public class MemscraperMainWindow extends JFrame{
 	private enum Domains{
 		JBZD, JBZD_VIDEO, DEMOTYWATORY
 	}
-	private Domains currnetDomain = Domains.JBZD_VIDEO;
+	private Domains currnetDomain = Domains.JBZD;
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
 
-	private List<MemInterface> mems;
+	private List<MemObject> mems;
 	
 	private int currentPage = 1;
 	private int lastMemeLoadedIndex = 0;
@@ -156,7 +159,7 @@ public class MemscraperMainWindow extends JFrame{
 		loadingState = LoadState.LOADING;
 		if(readTextBox)currentPage = Integer.parseInt(pageNumberTextField.getText());
 		else currentPage =1;
-		mems = new ArrayList<MemInterface>();
+		mems = new ArrayList<MemObject>();
 		lastMemeLoadedIndex = 0;
 		System.out.println("lats index" + lastMemeLoadedIndex);
 		for(Component c : contentPanel.getComponents()) {
@@ -222,11 +225,15 @@ public class MemscraperMainWindow extends JFrame{
 	private synchronized void loadMemInfo() {
 		switch(currnetDomain) {
 			case JBZD:
-				MemScraperJBZD jbzdScraper = new MemScraperJBZD("https://jbzdy.net/str/");
-				mems.addAll(jbzdScraper.loadMemsFromPage(currentPage));
+				MemScraper scraper = new MemScraperJbzd();
+				mems.addAll(scraper.loadMemsFromPage(currentPage));
+				/*MemScraperJBZD jbzdScraper = new MemScraperJBZD("https://jbzdy.net/str/");
+				mems.addAll(jbzdScraper.loadMemsFromPage(currentPage));*/
 				setTitle("JBZD scraper [Strona: "+ currentPage +"]");
 				break;
-			case DEMOTYWATORY:
+				default :
+					System.out.println("ERRORTYPE");
+/*			case DEMOTYWATORY:
 				MemScraperDemotywatory demotywatoryScraper = new MemScraperDemotywatory("https://demotywatory.pl/page/");
 				mems.addAll(demotywatoryScraper.loadMemsFromPage(currentPage));
 				setTitle("Demotywatory scraper [Strona: "+ currentPage +"]");
@@ -235,7 +242,7 @@ public class MemscraperMainWindow extends JFrame{
 				MemScraperJBZD jbzdVideoScraper = new MemScraperJBZD("https://jbzdy.net/video/");
 				mems.addAll(jbzdVideoScraper.loadMemsFromPage(currentPage));
 				setTitle("JBZD VIDEO scraper [Strona: "+ currentPage +"]");
-				break;
+				break;*/
 		}
 /*		MemScraper scraper = new MemScraper();
 		mems.addAll(scraper.loadMemsFromPage(currentPage));

@@ -16,6 +16,9 @@ import java.util.Arrays;
 
 import com.skiba.fun.memscraper.JBZDmemscraper.MemObjectJBZD;
 import com.skiba.fun.memscraper.Mem.MemInterface;
+import com.skiba.fun.memscraper.Mem.MemObject;
+import com.skiba.fun.memscraper.Mem.MemObjectImage;
+import com.skiba.fun.memscraper.Mem.MemObjectVideo;
 
 public class MemPanel extends JPanel {
 	private int panelWidth = 700;
@@ -25,7 +28,7 @@ public class MemPanel extends JPanel {
 	private JLabel bottomSeparatorLabel, topSeparatorLabel;
 	private JPanel infoPanel;
 
-	public MemPanel(MemInterface mem) {	
+	public MemPanel(MemObject mem) {	
 		initializeLayout();	
 		initializeMemInformationHeader(mem);	
 		addMemToView(mem);
@@ -38,7 +41,7 @@ public class MemPanel extends JPanel {
 		setBackground(Color.DARK_GRAY);
 	}
 
-	private void initializeMemInformationHeader(MemInterface mem) {
+	private void initializeMemInformationHeader(MemObject mem) {
 		infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 		
@@ -49,7 +52,7 @@ public class MemPanel extends JPanel {
 		add(infoPanel, BorderLayout.NORTH);
 	}
 
-	private void addInformationComponents(MemInterface mem) {
+	private void addInformationComponents(MemObject mem) {
 		addTopSpacingSeparator();	
 		addTitle(mem);
 		addTags(mem);
@@ -65,7 +68,7 @@ public class MemPanel extends JPanel {
 		infoPanel.add(topSeparatorLabel);
 	}
 
-	private void addTitle(MemInterface mem) {
+	private void addTitle(MemObject mem) {
 		String title =  mem.getTitle() + " [" + mem.getRating() + "]";//"<html>" + mem.getTitle() + " [" + mem.getRating() + "]" +"</html>";
 		titleTextArea = new JTextArea(title);
 		titleTextArea.setAlignmentX(LEFT_ALIGNMENT);
@@ -80,7 +83,7 @@ public class MemPanel extends JPanel {
 		infoPanel.add(titleTextArea);
 	}
 	
-	private void addTags(MemInterface mem) {
+	private void addTags(MemObject mem) {
 		tagLabel = new JLabel(Arrays.toString(mem.getTags()));
 		tagLabel.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		if(SharedData.getInstance().isDebugMode()) {
@@ -101,14 +104,14 @@ public class MemPanel extends JPanel {
 		infoPanel.add(bottomSeparatorLabel);
 	}
 
-	private void addMemToView(MemInterface mem) {
+	private void addMemToView(MemObject mem) {
 		switch(mem.getType()) {
 		case IMAGE:
-			MemPanelImage imageMem = new MemPanelImage(mem);	
+			MemPanelImage imageMem = new MemPanelImage((MemObjectImage)mem);	
 			add(imageMem, BorderLayout.CENTER);
 			break;
 		case VIDEO:
-			MemPanelVideo videoMem = new MemPanelVideo(mem);
+			MemPanelVideo videoMem = new MemPanelVideo((MemObjectVideo)mem);
 			add(videoMem, BorderLayout.CENTER);
 			break;
 		case UNDEFINED:
