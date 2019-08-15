@@ -50,7 +50,6 @@ public class MemPanelVideo extends JPanel{
 	
 	private void initializeThumbnail() {
 		thumbnail = new JLabel(mem.getThumbnail(), JLabel.CENTER);
-		thumbnail.setPreferredSize(new Dimension(mem.getVideoSize().width, mem.getVideoSize().height));
 		thumbnail.setMaximumSize(new Dimension(600, 600));
 	}
 	
