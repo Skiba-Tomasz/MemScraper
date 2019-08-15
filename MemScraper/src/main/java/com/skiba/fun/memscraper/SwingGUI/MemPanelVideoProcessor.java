@@ -65,7 +65,7 @@ public class MemPanelVideoProcessor {
 						if (totalSleepTime >= maxConnectionTimeout)
 							interrupt();
 					} catch (InterruptedException e) {
-						System.out.println("Przerwano. Mo¿liwe ¿e pojawi³ siê problem z odpowiedzi¹ serwera...");
+						System.out.println("Loading aborted. Server problem...");
 						e.printStackTrace();
 					}
 				}

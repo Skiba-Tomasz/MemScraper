@@ -108,7 +108,6 @@ public class MemPanel extends JPanel {
 
 	private void addErrorMemToView() {
 		URL url = getClass().getResource("/img/UndefinedProblem.png");
-		System.out.println(url);
 		ImageIcon errorIcon = new ImageIcon(url);
 		MemPanelImage errorMem = new MemPanelImage(errorIcon);
 		add(errorMem, BorderLayout.CENTER);

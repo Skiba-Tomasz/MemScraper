@@ -111,7 +111,6 @@ public class MemscraperMainWindow extends JFrame{
 	private void loadNewIfReachedBottom() {
 		if(loadingState == LoadState.WAITING) {
 			if(scrollPane.getVerticalScrollBar().getValue() >=  contentPanel.getHeight() - scrollBarTrigger && scrollPane.getVerticalScrollBar().getValue() != 0) {
-				System.out.println("Reached bottom");
 				loadNewMems();	
 			}
 		}
@@ -226,7 +225,6 @@ public class MemscraperMainWindow extends JFrame{
 				loadingState = LoadState.LOADING;
 				if(lastMemeLoadedIndex >= mems.size() - memsToLoadByStep) {
 					currentPage++;
-					System.out.println("Page++");
 					loadMemInfo();
 				}
 				for(int i = 0; i < memsToLoadByStep; i++) {

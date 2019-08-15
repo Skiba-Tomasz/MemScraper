@@ -28,7 +28,6 @@ public class MemScraperKwejk extends MemScraper{
 				FIRST_INDEX_PAGE = Integer.parseInt(jsDoc.select("div.pagination").select("ul.pager").select("li.current").text());
 			}
 			else {
-				System.out.println(FIRST_INDEX_PAGE);
 				jsDoc = Jsoup.connect(domainUrl + (FIRST_INDEX_PAGE - pageNumber)).get();
 			}
 			Elements postContainer = jsDoc.select("div.col-sm-8.col-xs-12");
@@ -58,10 +57,8 @@ public class MemScraperKwejk extends MemScraper{
 	protected String collectTitle(Element post) {
 		String title = post.select("div.box.fav.picture ").select("div.figure-holder").select("img").attr("alt");
 		if(title.isEmpty() || title.equals(new String(" "))) {
-			System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
 			title = post.select("div.box.fav.mp4 ").select("div.content").select("h2").text();
 		}
-		System.out.println("title: " + title);
 		return title;
 	}
 
@@ -69,7 +66,6 @@ public class MemScraperKwejk extends MemScraper{
 	protected String collectRating(Element post) {
 		String voteUp = post.select("div").attr("data-vote-up");
 		String voteDown = post.select("div").attr("data-vote-down");
-		//System.out.println(voteUp + "." + voteDown);
 		return new String("+" + voteUp + "/-" + voteDown);
 	}
 
@@ -77,7 +73,6 @@ public class MemScraperKwejk extends MemScraper{
 	protected String[] collectTags(Element post) {
 		String tagString = post.select("div.content")
 								.select("div.toolbar").select("div.tag-list").text();
-		System.out.println(tagString);
 		tagString = tagString.substring(1);
 		String[] tags = tagString.split("#");
 		return tags;
