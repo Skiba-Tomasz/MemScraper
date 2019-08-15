@@ -17,6 +17,7 @@ import com.skiba.fun.memscraper.Mem.MemObject;
 import com.skiba.fun.memscraper.Mem.MemScraper;
 import com.skiba.fun.memscraper.Mem.MemScraperDemotywatory;
 import com.skiba.fun.memscraper.Mem.MemScraperJbzd;
+import com.skiba.fun.memscraper.Mem.MemScraperKwejk;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,7 +33,7 @@ import javax.swing.JComboBox;
 
 public class MemscraperMainWindow extends JFrame{
 	
-	private Domains currnetDomain = Domains.JBZD;
+	private Domains currnetDomain = Domains.KWEJK;
 	private JScrollPane scrollPane;
 	private JPanel contentPanel;
 	private MemscraperMainWindowControlls navigationPanel;
@@ -195,6 +196,10 @@ public class MemscraperMainWindow extends JFrame{
 				mems.addAll(scraper.getMemsFromPage(currentPage));
 				setTitle("Demotywatory scraper [Strona: " + currentPage + "]");
 				break;
+			case KWEJK:
+				scraper = new MemScraperKwejk();
+				mems.addAll(scraper.getMemsFromPage(currentPage));
+				setTitle("Kwejk scraper [Strona: " + (((MemScraperKwejk)scraper).getFirstIndexPage() - currentPage + 1) + "]");
 		}
 	}
 	
