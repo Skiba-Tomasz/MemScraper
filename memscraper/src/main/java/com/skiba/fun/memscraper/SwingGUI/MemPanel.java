@@ -42,9 +42,7 @@ public class MemPanel extends JPanel {
 	private void initializeMemInformationHeader(MemObject mem) {
 		infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-		
-		if(SharedData.getInstance().isDebugMode())infoPanel.setBackground(Color.ORANGE);
-		else infoPanel.setBackground(Color.DARK_GRAY);
+		infoPanel.setBackground(Color.DARK_GRAY);
 		addInformationComponents(mem);	
 		infoPanel.setMaximumSize(infoPanel.getMinimumSize());
 		add(infoPanel, BorderLayout.NORTH);
@@ -60,9 +58,7 @@ public class MemPanel extends JPanel {
 	private void addTopSpacingSeparator() {
 		topSeparatorLabel = new JLabel(" ");
 		topSeparatorLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		topSeparatorLabel.setOpaque(true);
-		if(SharedData.getInstance().isDebugMode())topSeparatorLabel.setBackground(Color.GREEN);
-		else topSeparatorLabel.setBackground(Color.DARK_GRAY);
+		topSeparatorLabel.setBackground(Color.DARK_GRAY);
 		infoPanel.add(topSeparatorLabel);
 	}
 
@@ -74,9 +70,7 @@ public class MemPanel extends JPanel {
 		titleTextArea.setWrapStyleWord(true);
 		titleTextArea.setForeground(Color.red);
 		titleTextArea.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		titleTextArea.setOpaque(true);
-		if(SharedData.getInstance().isDebugMode())titleTextArea.setBackground(Color.BLUE);
-		else titleTextArea.setBackground(Color.DARK_GRAY);
+		titleTextArea.setBackground(Color.DARK_GRAY);
 		titleTextArea.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
 		infoPanel.add(titleTextArea);
 	}
@@ -84,10 +78,7 @@ public class MemPanel extends JPanel {
 	private void addTags(MemObject mem) {
 		tagLabel = new JLabel(Arrays.toString(mem.getTags()));
 		tagLabel.setFont(new Font("Tahoma", Font.PLAIN, 9));
-		if(SharedData.getInstance().isDebugMode()) {
-			tagLabel.setOpaque(true);
-			tagLabel.setBackground(Color.PINK);
-		}else tagLabel.setBackground(Color.DARK_GRAY);
+		tagLabel.setBackground(Color.DARK_GRAY);
 		tagLabel.setForeground(Color.red);
 		infoPanel.add(tagLabel);
 	}
@@ -95,10 +86,7 @@ public class MemPanel extends JPanel {
 	private void addBottomSeparator() {
 		bottomSeparatorLabel = new JLabel(" ");
 		bottomSeparatorLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		if(SharedData.getInstance().isDebugMode()) {
-			bottomSeparatorLabel.setOpaque(true);
-			bottomSeparatorLabel.setBackground(Color.GREEN);
-		} else bottomSeparatorLabel.setBackground(Color.DARK_GRAY);
+		bottomSeparatorLabel.setBackground(Color.DARK_GRAY);
 		infoPanel.add(bottomSeparatorLabel);
 	}
 

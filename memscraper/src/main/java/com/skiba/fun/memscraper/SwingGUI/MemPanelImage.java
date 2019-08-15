@@ -15,7 +15,6 @@ public class MemPanelImage extends JPanel{
 	
 	public MemPanelImage(MemObjectImage mem) {
 		initializeLayout();
-		if(SharedData.getInstance().isDebugMode())setBackground(Color.CYAN);
 		imageDisplayLabel = setImageToLabelView(mem.getMemImage());
 		add(imageDisplayLabel, BorderLayout.CENTER);
 		setMaximumSize(getMinimumSize());
@@ -25,11 +24,7 @@ public class MemPanelImage extends JPanel{
 
 	public MemPanelImage(ImageIcon icon) {
 		initializeLayout();
-		imageDisplayLabel = setImageToLabelView(icon);
-		if(SharedData.getInstance().isDebugMode()) {
-			imageDisplayLabel.setOpaque(true);
-			imageDisplayLabel.setBackground(Color.RED);
-		}
+		imageDisplayLabel = setImageToLabelView(icon);		
 		imageDisplayLabel.setMaximumSize(imageDisplayLabel.getMinimumSize());
 		add(imageDisplayLabel, BorderLayout.CENTER);
 	}
