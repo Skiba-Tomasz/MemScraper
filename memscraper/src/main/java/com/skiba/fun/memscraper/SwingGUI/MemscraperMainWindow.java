@@ -118,7 +118,7 @@ public class MemscraperMainWindow extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout(5, 0));
 		setMinimumSize(new Dimension(700, 800));
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 	
 	private void initializeFrameComponents() {	
@@ -195,21 +195,23 @@ public class MemscraperMainWindow extends JFrame{
 	
 	private void loadCurrentPage() {
 		if(domainWorker ==null||!domainWorker.isAlive()) {
+		MemscraperDialog loadingDialog = new MemscraperDialog(this);
 		domainWorker = new Thread() {
 			public void run() {
-				JOptionPane optionPane = new JOptionPane("£adowanie proszê czekaæ", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);				
+				loadingDialog.showDomainLoadingDialog();
+/*				JOptionPane optionPane = new JOptionPane("£adowanie proszê czekaæ", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);				
 				JDialog dialog = new JDialog();
 				dialog.setContentPane(optionPane);
 				dialog.setSize(new Dimension(300,100));
 				dialog.setLocation(getWidth()/2 - dialog.getWidth()/2, getHeight()/2 - dialog.getHeight()/2);
 				dialog.setModal(false);
 				dialog.setAlwaysOnTop(true);
-				dialog.setVisible(true);
+				dialog.setVisible(true);*/
 				loadMemInfo();
 				for(int i = 0; i < mems.size(); i++) {
 					addMemPanel();
 				}
-				dialog.dispose();
+				loadingDialog.dispose();
 				refreshWindow();
 			}
 		};
@@ -219,35 +221,21 @@ public class MemscraperMainWindow extends JFrame{
 
 	private synchronized void loadMemInfo() {
 		MemScraper scraper = null;
-		switch(currnetDomain) {
+		switch (currnetDomain) {
 			case JBZD:
 			case JBZD_VIDEO:
 				scraper = new MemScraperJbzd(currnetDomain);
 				mems.addAll(scraper.getMemsFromPage(currentPage));
-				/*MemScraperJBZD jbzdScraper = new MemScraperJBZD("https://jbzdy.net/str/");
-				mems.addAll(jbzdScraper.loadMemsFromPage(currentPage));*/
-				setTitle("JBZD scraper [Strona: "+ currentPage +"]");
+				setTitle("JBZD scraper [Strona: " + currentPage + "]");
 				break;
-				default :
-					System.out.println("ERRORTYPE");
+			default:
+				System.out.println("ERRORTYPE");
 			case DEMOTYWATORY:
 				scraper = new MemScraperDemotywatory();
 				mems.addAll(scraper.getMemsFromPage(currentPage));
-				/*MemScraperDemotywatory demotywatoryScraper = new MemScraperDemotywatory("https://demotywatory.pl/page/");
-				mems.addAll(demotywatoryScraper.loadMemsFromPage(currentPage));*/
-				setTitle("Demotywatory scraper [Strona: "+ currentPage +"]");
+				setTitle("Demotywatory scraper [Strona: " + currentPage + "]");
 				break;
-			/*case JBZD_VIDEO:
-				MemScraperJBZD jbzdVideoScraper = new MemScraperJBZD("https://jbzdy.net/video/");
-				mems.addAll(jbzdVideoScraper.loadMemsFromPage(currentPage));
-				setTitle("JBZD VIDEO scraper [Strona: "+ currentPage +"]");
-				break;*/
 		}
-/*		MemScraper scraper = new MemScraper();
-		mems.addAll(scraper.loadMemsFromPage(currentPage));
-		setTitle("JBZD scraper [Strona: "+ currentPage +"]");
-		MemScraperDemotywatory scraper = new MemScraperDemotywatory();
-		mems.addAll(scraper.loadMemsFromPage(currentPage));*/
 	}
 	
 	private synchronized void addMemPanel() {
